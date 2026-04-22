@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}ホーム{% endblock %}
+{% block content %}
+<h1>ホーム</h1>
+
+<div class="stack">
+    <section class="card">
+        <h2>現在の目標</h2>
+        {% if latest_goal %}
+            <p><strong>{{ latest_goal.goal_title }}</strong></p>
+            <p class="preline">{{ latest_goal.goal_detail }}</p>
+        {% else %}
+            <p>まだ目標がありません。</p>
+        {% endif %}
+        <a class="button" href="{{ url_for('goals.new_goal') }}">目標を設定する</a>
+    </section>
+
+    <section class="card">
+        <h2>今日の練習テーマ</h2>
+        {% if latest_theme %}
+            <p><strong>{{ latest_theme.theme_title }}</strong></p>
+            <p>{{ latest_theme.theme_detail }}</p>
+        {% else %}
+            <p>まだテーマがありません。</p>
+        {% endif %}
+        <a class="button secondary" href="{{ url_for('analysis.latest_theme') }}">テーマを見る</a>
+    </section>
+
+    <section class="card">
+        <h2>前回の振り返り</h2>
+        {% if latest_reflection %}
+            <p><strong>できたこと:</strong> {{ latest_reflection.good_points }}</p>
+            <p><strong>次回意識:</strong> {{ latest_reflection.next_action }}</p>
+        {% else %}
+            <p>まだ振り返りがありません。</p>
+        {% endif %}
+        <a class="button secondary" href="{{ url_for('reflection.new_reflection') }}">振り返りを書く</a>
+    </section>
+
+    <section class="card">
+        <h2>メニュー</h2>
+        <div class="button-list">
+            <a class="button secondary" href="{{ url_for('analysis.assessment') }}">課題分析</a>
+            <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログ</a>
+            <a class="button secondary" href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

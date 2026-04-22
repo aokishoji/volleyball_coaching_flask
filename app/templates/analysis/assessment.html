@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}課題分析{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>課題分析</h1>
+    <p><strong>現在の目標:</strong> {{ active_goal.goal_title }}</p>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="grid-two">
+            {{ render_field(form.approach_rating) }}
+            {{ render_field(form.takeoff_rating) }}
+            {{ render_field(form.jump_rating) }}
+            {{ render_field(form.air_posture_rating) }}
+            {{ render_field(form.contact_rating) }}
+            {{ render_field(form.contact_point_rating) }}
+            {{ render_field(form.course_rating) }}
+            {{ render_field(form.block_rating) }}
+            {{ render_field(form.timing_rating) }}
+            {{ render_field(form.mental_rating) }}
+        </div>
+        {{ render_field(form.failure_patterns) }}
+        {{ render_field(form.notes) }}
+        {{ form.submit(class_='button') }}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}プロフィール{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>プロフィール</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.name) }}
+        {{ render_field(form.age_group) }}
+        {{ render_field(form.position) }}
+        {{ render_field(form.experience_years) }}
+        {{ form.submit(class_='button') }}
+    </form>
+</div>
+{% endblock %}

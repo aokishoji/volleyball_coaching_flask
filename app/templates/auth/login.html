@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}ログイン{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>ログイン</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.email) }}
+        {{ render_field(form.password) }}
+        {{ form.submit(class_='button') }}
+    </form>
+    <p class="sub-link">アカウントがない場合は <a href="{{ url_for('auth.register') }}">新規登録</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}今日の練習テーマ{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>今日の練習テーマ</h1>
+    {% if theme %}
+        <p><strong>{{ theme.theme_title }}</strong></p>
+        <p>{{ theme.theme_detail }}</p>
+
+        <div class="sub-card">
+            <h2>セルフチェック</h2>
+            <p>{{ theme.self_check_point }}</p>
+        </div>
+
+        <div class="sub-card">
+            <h2>コーチに見てもらうポイント</h2>
+            <p>{{ theme.coach_check_point }}</p>
+        </div>
+
+        <a class="button" href="{{ url_for('reflection.new_reflection') }}">練習後に振り返る</a>
+    {% else %}
+        <p>まだテーマがありません。</p>
+        <a class="button" href="{{ url_for('analysis.assessment') }}">課題分析へ</a>
+    {% endif %}
+</div>
+{% endblock %}

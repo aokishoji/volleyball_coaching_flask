@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}振り返り{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>振り返り</h1>
+    <div class="sub-card">
+        <h2>今回のテーマ</h2>
+        <p><strong>{{ latest_theme.theme_title }}</strong></p>
+        <p>{{ latest_theme.theme_detail }}</p>
+    </div>
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.theme_applied) }}
+        {{ render_field(form.good_points) }}
+        {{ render_field(form.bad_points) }}
+        {{ render_field(form.cause_hypothesis) }}
+        {{ render_field(form.next_action) }}
+        {{ render_field(form.coach_question) }}
+        {{ form.submit(class_='button') }}
+    </form>
+</div>
+{% endblock %}

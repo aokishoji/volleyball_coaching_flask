@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}成長ログ{% endblock %}
+{% block content %}
+<h1>成長ログ</h1>
+
+<div class="stack">
+    <section class="card">
+        <h2>目標履歴</h2>
+        {% if goals %}
+            {% for goal in goals %}
+                <div class="list-item">
+                    <strong>{{ goal.goal_title }}</strong>
+                    <p>{{ goal.goal_detail }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>目標はまだありません。</p>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <h2>練習テーマ履歴</h2>
+        {% if themes %}
+            {% for theme in themes %}
+                <div class="list-item">
+                    <strong>{{ theme.theme_title }}</strong>
+                    <p>{{ theme.theme_detail }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>テーマはまだありません。</p>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <h2>振り返り履歴</h2>
+        {% if reflections %}
+            {% for reflection in reflections %}
+                <div class="list-item">
+                    <strong>{{ reflection.created_at.strftime('%Y-%m-%d') }}</strong>
+                    <p><strong>できたこと:</strong> {{ reflection.good_points }}</p>
+                    <p><strong>次回意識:</strong> {{ reflection.next_action }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>振り返りはまだありません。</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

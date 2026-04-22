@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}深掘り{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>深掘り質問</h1>
+    <p>優先課題候補: <strong>{{ assessment.issue_category or 'timing' }}</strong></p>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.timing_start) }}
+        {{ render_field(form.timing_takeoff) }}
+        {{ render_field(form.timing_toss) }}
+        {{ render_field(form.timing_match_only) }}
+        {{ render_field(form.timing_tension) }}
+        {{ form.submit(class_='button') }}
+    </form>
+</div>
+{% endblock %}

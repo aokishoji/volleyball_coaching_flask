@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}目標設定{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>目標設定</h1>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.skill_type) }}
+        {{ render_field(form.improve_target) }}
+        {{ render_field(form.problem_scene) }}
+        {{ render_field(form.ideal_state) }}
+        {{ render_field(form.target_date) }}
+        {{ form.submit(class_='button') }}
+    </form>
+</div>
+{% endblock %}

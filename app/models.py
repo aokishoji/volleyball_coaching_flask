@@ -1,0 +1,122 @@
+from datetime import datetime
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from .extensions import db, login_manager
+
+class TimestampMixin:
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False
+    )
+
+class User(UserMixin, db.Model, TimestampMixin):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+
+    profile = db.relationship("Profile", back_populates="user", uselist=False)
+    goals = db.relationship("Goal", back_populates="user", lazy=True)
+    assessments = db.relationship("Assessment", back_populates="user", lazy=True)
+    practice_themes = db.relationship("PracticeTheme", back_populates="user", lazy=True)
+    reflections = db.relationship("Reflection", back_populates="user", lazy=True)
+
+    def set_password(self, password: str) -> None:
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password: str) -> bool:
+        return check_password_hash(self.password_hash, password)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class Profile(db.Model, TimestampMixin):
+    __tablename__ = "profiles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
+    age_group = db.Column(db.String(50))
+    position = db.Column(db.String(50))
+    experience_years = db.Column(db.Integer)
+
+    user = db.relationship("User", back_populates="profile")
+
+class Goal(db.Model, TimestampMixin):
+    __tablename__ = "goals"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    skill_type = db.Column(db.String(50), nullable=False, default="spike")
+    goal_title = db.Column(db.String(255), nullable=False)
+    goal_detail = db.Column(db.Text, nullable=False)
+    target_date = db.Column(db.Date)
+    status = db.Column(db.String(20), nullable=False, default="active")
+
+    user = db.relationship("User", back_populates="goals")
+    assessments = db.relationship("Assessment", back_populates="goal", lazy=True)
+
+class Assessment(db.Model):
+    __tablename__ = "assessments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"), nullable=False)
+    issue_category = db.Column(db.String(100))
+    self_rating_json = db.Column(db.Text, nullable=False)
+    failure_pattern_json = db.Column(db.Text, nullable=False)
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", back_populates="assessments")
+    goal = db.relationship("Goal", back_populates="assessments")
+    deep_dive_answers = db.relationship("DeepDiveAnswer", back_populates="assessment", lazy=True)
+    practice_themes = db.relationship("PracticeTheme", back_populates="assessment", lazy=True)
+
+class DeepDiveAnswer(db.Model):
+    __tablename__ = "deep_dive_answers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    assessment_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), nullable=False)
+    question_key = db.Column(db.String(100), nullable=False)
+    answer_value = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    assessment = db.relationship("Assessment", back_populates="deep_dive_answers")
+
+class PracticeTheme(db.Model):
+    __tablename__ = "practice_themes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"), nullable=False)
+    assessment_id = db.Column(db.Integer, db.ForeignKey("assessments.id"), nullable=False)
+    theme_title = db.Column(db.String(255), nullable=False)
+    theme_detail = db.Column(db.Text, nullable=False)
+    self_check_point = db.Column(db.Text)
+    coach_check_point = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", back_populates="practice_themes")
+    assessment = db.relationship("Assessment", back_populates="practice_themes")
+
+class Reflection(db.Model):
+    __tablename__ = "reflections"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    practice_theme_id = db.Column(db.Integer, db.ForeignKey("practice_themes.id"), nullable=False)
+    theme_applied = db.Column(db.String(20), nullable=False)
+    good_points = db.Column(db.Text, nullable=False)
+    bad_points = db.Column(db.Text, nullable=False)
+    cause_hypothesis = db.Column(db.Text)
+    next_action = db.Column(db.Text, nullable=False)
+    coach_question = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", back_populates="reflections")
