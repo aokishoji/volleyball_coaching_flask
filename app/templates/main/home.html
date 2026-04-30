@@ -12,7 +12,10 @@
         {% else %}
             <p>まだ目標がありません。</p>
         {% endif %}
-        <a class="button" href="{{ url_for('goals.new_goal') }}">目標を設定する</a>
+        <div class="button-list">
+            <a class="button" href="{{ url_for('goals.roadmap') }}">長期目標を分解する</a>
+            <a class="button secondary" href="{{ url_for('goals.new_goal') }}">目標を設定する</a>
+        </div>
     </section>
 
     <section class="card">
@@ -41,6 +44,7 @@
         <h2>メニュー</h2>
         <div class="button-list">
             <a class="button secondary" href="{{ url_for('analysis.assessment') }}">課題分析</a>
+            <a class="button secondary" href="{{ url_for('goals.roadmap') }}">長期目標ロードマップ</a>
             <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログ</a>
             <a class="button secondary" href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
         </div>

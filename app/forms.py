@@ -57,6 +57,41 @@ class GoalForm(FlaskForm):
     target_date = DateField("期限", validators=[Optional()])
     submit = SubmitField("目標を保存する")
 
+class GoalRoadmapForm(FlaskForm):
+    rough_goal = TextAreaField(
+        "ざっくりした目標",
+        validators=[DataRequired(), Length(max=1000)]
+    )
+    current_level = TextAreaField(
+        "今の状態・課題感",
+        validators=[Optional(), Length(max=1000)]
+    )
+    target_date = DateField("達成したい日", validators=[Optional()])
+    weekly_practice_days = SelectField(
+        "週に練習できる日数",
+        choices=[
+            ("2", "週2日"),
+            ("3", "週3日"),
+            ("4", "週4日"),
+            ("5", "週5日以上"),
+        ],
+        validators=[DataRequired()]
+    )
+    focus_hint = SelectMultipleField(
+        "特に強化したい要素",
+        choices=[
+            ("spike", "スパイク"),
+            ("serve", "サーブ"),
+            ("reception", "レセプション"),
+            ("defense", "ディグ・守備"),
+            ("setting", "トス・つなぎ"),
+            ("physical", "フィジカル"),
+            ("mental", "メンタル"),
+        ],
+        validators=[Optional()]
+    )
+    submit = SubmitField("目標を分解する")
+
 class AssessmentForm(FlaskForm):
     approach_rating = SelectField("助走", choices=RATING_CHOICES, validators=[DataRequired()])
     takeoff_rating = SelectField("踏切", choices=RATING_CHOICES, validators=[DataRequired()])

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}長期目標ロードマップ{% endblock %}
+{% block content %}
+<div class="stack">
+    <section class="card">
+        <h1>長期目標ロードマップ</h1>
+        <p class="sub-link">ざっくりした目標を、バレーボールの要素・期限・OK基準・日々の練習案に分解します。</p>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.rough_goal) }}
+            {{ render_field(form.current_level) }}
+            {{ render_field(form.target_date) }}
+            {{ render_field(form.weekly_practice_days) }}
+            {{ render_field(form.focus_hint) }}
+            {{ form.submit(class_='button') }}
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>入力例</h2>
+        <p class="preline">1年後の大会で優勝したい。
+今はスパイクの決定力とレセプションの安定感に波がある。
+週3回の練習で、試合で使える強みを作りたい。</p>
+    </section>
+</div>
+{% endblock %}

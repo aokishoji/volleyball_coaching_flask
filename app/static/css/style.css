@@ -119,6 +119,10 @@ select {
   background: #fff;
 }
 
+select[multiple] {
+  min-height: 150px;
+}
+
 textarea {
   min-height: 110px;
   resize: vertical;
