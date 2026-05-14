@@ -35,16 +35,9 @@ python run.py
 ```
 
 ## 初回DB作成
-現状は簡易初期化スクリプトとして Flask shell で作成できます。
 
 ```bash
-python
->>> from app import create_app
->>> from app.extensions import db
->>> app = create_app()
->>> app.app_context().push()
->>> db.create_all()
->>> exit()
+python -m flask --app run init-db
 ```
 
 ## ディレクトリ構成
