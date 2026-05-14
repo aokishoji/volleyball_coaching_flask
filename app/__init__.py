@@ -1,4 +1,5 @@
 import os
+from datetime import timezone, timedelta
 from flask import Flask
 from config import Config
 from .extensions import db, login_manager
@@ -24,6 +25,16 @@ def create_app():
     app.register_blueprint(analysis_bp, url_prefix="/analysis")
     app.register_blueprint(reflection_bp, url_prefix="/reflections")
     app.register_blueprint(profile_bp, url_prefix="/profile")
+
+    _JST = timezone(timedelta(hours=9))
+
+    @app.template_filter("jst")
+    def jst_filter(dt, fmt="%Y-%m-%d %H:%M"):
+        if dt is None:
+            return ""
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(_JST).strftime(fmt)
 
     @app.cli.command("init-db")
     def init_db():

@@ -1,6 +1,8 @@
 import json
 from flask import current_app
 from openai import OpenAI
+from ..extensions import db
+from ..models import GoalCoachSession
 
 SYSTEM_PROMPT = """
 あなたは中高生から競技者までを支援するバレーボール専門のAIコーチです。
@@ -163,6 +165,32 @@ def normalize_goal_result(result: dict) -> dict:
 
     result["milestones"] = normalized
     return result
+
+def get_coach_session(user_id: int) -> tuple:
+    record = GoalCoachSession.query.filter_by(user_id=user_id).first()
+    if record is None:
+        return [], [], None, None
+    return (
+        json.loads(record.history_json),
+        json.loads(record.display_json),
+        json.loads(record.result_json) if record.result_json else None,
+        record.target_date_text,
+    )
+
+def upsert_coach_session(user_id: int, history: list, display: list, result: dict, target_date_text) -> None:
+    record = GoalCoachSession.query.filter_by(user_id=user_id).first()
+    if record is None:
+        record = GoalCoachSession(user_id=user_id)
+        db.session.add(record)
+    record.history_json = json.dumps(history, ensure_ascii=False)
+    record.display_json = json.dumps(display, ensure_ascii=False)
+    record.result_json = json.dumps(result, ensure_ascii=False)
+    record.target_date_text = target_date_text
+    db.session.commit()
+
+def clear_coach_session(user_id: int) -> None:
+    GoalCoachSession.query.filter_by(user_id=user_id).delete()
+    db.session.commit()
 
 def build_saved_goal_detail(result: dict) -> str:
     lines = [result.get("goal_detail", "").strip()]

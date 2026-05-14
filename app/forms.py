@@ -9,6 +9,14 @@ RATING_CHOICES = [(str(i), str(i)) for i in range(1, 6)]
 YES_NO_CHOICES = [("yes", "はい"), ("no", "いいえ")]
 YES_NO_PARTIAL_CHOICES = [("yes", "はい"), ("partial", "一部"), ("no", "いいえ")]
 
+AGE_GROUP_CHOICES = [
+    ("", "選択してください"),
+    ("elem_1", "小1"), ("elem_2", "小2"), ("elem_3", "小3"),
+    ("elem_4", "小4"), ("elem_5", "小5"), ("elem_6", "小6"),
+    ("junior_1", "中1"), ("junior_2", "中2"), ("junior_3", "中3"),
+    ("high_1", "高1"), ("high_2", "高2"), ("high_3", "高3"),
+]
+
 class LoginForm(FlaskForm):
     email = StringField("メールアドレス", validators=[DataRequired(), Email()])
     password = PasswordField("パスワード", validators=[DataRequired()])
@@ -24,11 +32,7 @@ class RegisterForm(FlaskForm):
     )
     age_group = SelectField(
         "学年/年代区分",
-        choices=[
-            ("", "選択してください"),
-            ("junior_1", "中1"), ("junior_2", "中2"), ("junior_3", "中3"),
-            ("high_1", "高1"), ("high_2", "高2"), ("high_3", "高3"),
-        ],
+        choices=AGE_GROUP_CHOICES,
         validators=[Optional()]
     )
     position = SelectField(
@@ -172,11 +176,7 @@ class ProfileForm(FlaskForm):
     name = StringField("表示名", validators=[DataRequired(), Length(max=100)])
     age_group = SelectField(
         "学年/年代区分",
-        choices=[
-            ("", "選択してください"),
-            ("junior_1", "中1"), ("junior_2", "中2"), ("junior_3", "中3"),
-            ("high_1", "高1"), ("high_2", "高2"), ("high_3", "高3"),
-        ],
+        choices=AGE_GROUP_CHOICES,
         validators=[Optional()]
     )
     position = SelectField(

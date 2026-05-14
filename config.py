@@ -14,4 +14,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_TIME_LIMIT = None
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.4-mini")
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")

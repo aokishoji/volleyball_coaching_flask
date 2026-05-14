@@ -10,7 +10,7 @@
             {% for goal in goals %}
                 <div class="list-item">
                     <strong>{{ goal.goal_title }}</strong>
-                    <p>{{ goal.goal_detail }}</p>
+                    <p class="preline">{{ goal.goal_detail }}</p>
                 </div>
             {% endfor %}
         {% else %}
@@ -19,31 +19,49 @@
     </section>
 
     <section class="card">
-        <h2>練習テーマ履歴</h2>
-        {% if themes %}
-            {% for theme in themes %}
+        <h2>練習記録</h2>
+        {% if daily_themes %}
+            {% for theme in daily_themes %}
                 <div class="list-item">
-                    <strong>{{ theme.theme_title }}</strong>
-                    <p>{{ theme.theme_detail }}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>テーマはまだありません。</p>
-        {% endif %}
-    </section>
+                    <p style="font-size:0.8rem; color:#888;">{{ theme.created_at | jst('%Y-%m-%d') }}</p>
 
-    <section class="card">
-        <h2>振り返り履歴</h2>
-        {% if reflections %}
-            {% for reflection in reflections %}
-                <div class="list-item">
-                    <strong>{{ reflection.created_at.strftime('%Y-%m-%d') }}</strong>
-                    <p><strong>できたこと:</strong> {{ reflection.good_points }}</p>
-                    <p><strong>次回意識:</strong> {{ reflection.next_action }}</p>
+                    <div class="sub-card" style="margin-bottom:0.5rem;">
+                        <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">練習テーマ</p>
+                        <p><strong>{{ theme.theme_title }}</strong></p>
+                        <p class="preline" style="font-size:0.9rem;">{{ theme.theme_detail }}</p>
+                        {% if theme.check_point %}
+                            <p style="font-size:0.85rem;"><strong>振り返りポイント:</strong> {{ theme.check_point }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% if theme.reflections %}
+                        {% for r in theme.reflections %}
+                        <div style="border-left:3px solid #4a90d9; padding-left:0.75rem; margin-top:0.5rem;">
+                            <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">振り返り — {{ r.created_at | jst }}</p>
+                            <p style="font-size:0.85rem;">
+                                <strong>テーマを意識できたか:</strong>
+                                {% if r.theme_applied == 'yes' %}はい
+                                {% elif r.theme_applied == 'partial' %}一部
+                                {% else %}いいえ{% endif %}
+                            </p>
+                            <p style="font-size:0.85rem;"><strong>できたこと:</strong> {{ r.good_points }}</p>
+                            <p style="font-size:0.85rem;"><strong>できなかったこと:</strong> {{ r.bad_points }}</p>
+                            {% if r.cause_hypothesis %}
+                                <p style="font-size:0.85rem;"><strong>原因の仮説:</strong> {{ r.cause_hypothesis }}</p>
+                            {% endif %}
+                            <p style="font-size:0.85rem;"><strong>次回意識すること:</strong> {{ r.next_action }}</p>
+                            {% if r.coach_question %}
+                                <p style="font-size:0.85rem;"><strong>コーチへの質問:</strong> {{ r.coach_question }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p style="font-size:0.85rem; color:#aaa; margin-top:0.5rem;">まだ振り返りがありません</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% else %}
-            <p>振り返りはまだありません。</p>
+            <p>まだ記録がありません。</p>
         {% endif %}
     </section>
 </div>

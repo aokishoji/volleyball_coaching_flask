@@ -57,6 +57,7 @@ class Goal(db.Model, TimestampMixin):
     goal_detail = db.Column(db.Text, nullable=False)
     target_date = db.Column(db.Date)
     status = db.Column(db.String(20), nullable=False, default="active")
+    current_month_override = db.Column(db.Integer, nullable=True)
 
     user = db.relationship("User", back_populates="goals")
     assessments = db.relationship("Assessment", back_populates="goal", lazy=True)
@@ -96,6 +97,20 @@ class DailyPracticeTheme(db.Model):
 
     goal = db.relationship("Goal", back_populates="daily_themes")
     milestone = db.relationship("GoalMilestone", back_populates="daily_themes")
+
+class GoalCoachSession(db.Model, TimestampMixin):
+    """AI目標設定の会話セッション（ユーザーごとに1件）"""
+    __tablename__ = "goal_coach_sessions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True)
+    history_json = db.Column(db.Text, nullable=False, default="[]")
+    display_json = db.Column(db.Text, nullable=False, default="[]")
+    result_json = db.Column(db.Text)
+    target_date_text = db.Column(db.String(20))
+
+    user = db.relationship("User", backref=db.backref("goal_coach_session", uselist=False))
+
 
 class Assessment(db.Model):
     __tablename__ = "assessments"
@@ -146,7 +161,8 @@ class Reflection(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    practice_theme_id = db.Column(db.Integer, db.ForeignKey("practice_themes.id"), nullable=False)
+    practice_theme_id = db.Column(db.Integer, db.ForeignKey("practice_themes.id"), nullable=True)
+    daily_theme_id = db.Column(db.Integer, db.ForeignKey("daily_practice_themes.id"), nullable=True)
     theme_applied = db.Column(db.String(20), nullable=False)
     good_points = db.Column(db.Text, nullable=False)
     bad_points = db.Column(db.Text, nullable=False)
@@ -156,3 +172,4 @@ class Reflection(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     user = db.relationship("User", back_populates="reflections")
+    daily_theme = db.relationship("DailyPracticeTheme", backref=db.backref("reflections", lazy=True))

@@ -14,6 +14,23 @@
 - 成長ログ
 - プロフィール
 
+## OpenAI APIキーの設定
+
+AI目標設定機能を使うには OpenAI API キーが必要です。
+
+`.env.example` をコピーして `.env` を作成し、キーを設定してください。
+
+```bash
+cp .env.example .env
+```
+
+```
+OPENAI_API_KEY=sk-...       # OpenAI のAPIキー
+OPENAI_MODEL=gpt-4o-mini    # 使用モデル（省略可、デフォルト: gpt-4o-mini）
+```
+
+キーを設定しない場合は仮モードで動作し、固定応答が返ります。
+
 ## セットアップ
 
 ```bash
@@ -34,11 +51,14 @@ pip install -r requirements.txt
 python run.py
 ```
 
-## 初回DB作成
+## 初回DB作成 / テーブル追加後の再作成
 
 ```bash
 python -m flask --app run init-db
 ```
+
+> AI目標設定の会話をDBに保存する `goal_coach_sessions` テーブルが追加されています。  
+> 既存のDBがある場合は `init-db` を再実行するか、SQLite ブラウザ等でテーブルを追加してください。
 
 ## ディレクトリ構成
 

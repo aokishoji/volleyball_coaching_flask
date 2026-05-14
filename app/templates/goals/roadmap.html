@@ -19,7 +19,7 @@
                 {{ form.submit(class_='button') }}
             </form>
         {% else %}
-            <div class="coach-chat">
+            <div class="coach-chat" id="coach-chat">
                 {% for item in display_messages %}
                     <div class="chat-message chat-{{ item.role }}">
                         <div class="chat-role">{{ "選手" if item.role == "user" else "AIコーチ" }}</div>
@@ -30,33 +30,55 @@
 
             {% if result and result.status == "ready" %}
                 <div class="sub-card">
-                    <h2>保存候補</h2>
+                    <h2>目標案</h2>
                     <p><strong>{{ result.goal_title }}</strong></p>
-                    <p class="preline">{{ result.goal_detail }}</p>
+                    {% if result.goal_detail %}
+                        <p class="preline">{{ result.goal_detail }}</p>
+                    {% endif %}
 
                     {% if result.milestones %}
-                        <h2>3か月マイルストーン</h2>
-                        <ul>
-                            {% for milestone in result.milestones %}
-                                <li>{{ milestone }}</li>
-                            {% endfor %}
-                        </ul>
+                        <h3>3か月マイルストーン</h3>
+                        {% for ms in result.milestones %}
+                            <div class="milestone-item">
+                                <p><strong>{{ ms.month }}か月目：{{ ms.title }}</strong></p>
+                                {% if ms.ok_criteria %}
+                                    <p>OK基準：{{ ms.ok_criteria }}</p>
+                                {% endif %}
+                                {% if ms.practice_focus %}
+                                    <ul>
+                                        {% for focus in ms.practice_focus %}
+                                            <li>{{ focus }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     {% endif %}
 
                     {% if result.practice_focus %}
-                        <h2>日々の練習で意識すること</h2>
+                        <h3>日々の練習で意識すること</h3>
                         <ul>
-                            {% for item in result.practice_focus %}
-                                <li>{{ item }}</li>
+                            {% for focus in result.practice_focus %}
+                                <li>{{ focus }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
                 </div>
 
-                <form method="post">
+                <form method="post" style="margin-top: 1rem;">
                     <input type="hidden" name="action" value="save">
-                    <button class="button" type="submit">この目標を保存する</button>
+                    <button class="button" type="submit">この内容で確定する</button>
                 </form>
+
+                <div style="margin-top: 1.5rem; border-top: 1px solid #ddd; padding-top: 1rem;">
+                    <p style="font-size: 0.9rem; color: #666;">修正したい点があればコーチに伝えてください</p>
+                    <form method="post">
+                        {{ message_form.hidden_tag() }}
+                        <input type="hidden" name="action" value="message">
+                        {{ render_field(message_form.message) }}
+                        <button class="button secondary" type="submit">まだ調整したい</button>
+                    </form>
+                </div>
             {% else %}
                 <form method="post">
                     {{ message_form.hidden_tag() }}
@@ -66,11 +88,15 @@
                 </form>
             {% endif %}
 
-            <form method="post">
+            <form method="post" style="margin-top: 1rem;">
                 <input type="hidden" name="action" value="reset">
                 <button class="button secondary" type="submit">最初からやり直す</button>
             </form>
         {% endif %}
     </section>
 </div>
+<script>
+    var chat = document.getElementById("coach-chat");
+    if (chat) { chat.scrollTop = chat.scrollHeight; }
+</script>
 {% endblock %}

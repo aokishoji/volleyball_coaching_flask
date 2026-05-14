@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from ..models import DailyPracticeTheme, Goal, GoalMilestone, PracticeTheme, Reflection
@@ -23,6 +24,10 @@ def home():
         ).first()
         current_practice_focus = practice_focus_list(current_milestone)
 
+    days_on_theme = None
+    if latest_daily_theme:
+        days_on_theme = (datetime.utcnow().date() - latest_daily_theme.created_at.date()).days + 1
+
     return render_template(
         "main/home.html",
         latest_goal=latest_goal,
@@ -32,4 +37,5 @@ def home():
         current_month=current_month,
         current_milestone=current_milestone,
         current_practice_focus=current_practice_focus,
+        days_on_theme=days_on_theme,
     )

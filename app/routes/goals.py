@@ -1,17 +1,20 @@
 import json
 from datetime import date
-from flask import Blueprint, render_template, redirect, url_for, flash, request, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from ..extensions import db
 from ..forms import GoalForm, GoalRoadmapForm, GoalCoachMessageForm
-from ..models import Goal, GoalMilestone
+from ..models import Goal, GoalMilestone, GoalCoachSession, Reflection
 from ..services.goal_service import build_goal_text
 from ..services.ai_goal_coach_service import (
     ask_goal_coach,
     build_initial_user_message,
     build_saved_goal_detail,
+    get_coach_session,
+    upsert_coach_session,
+    clear_coach_session,
 )
-from ..services.goal_progress_service import build_today_theme, current_month_index
+from ..services.goal_progress_service import build_today_theme_ai, current_month_index
 
 goals_bp = Blueprint("goals", __name__)
 
@@ -47,25 +50,19 @@ def new_goal():
 def roadmap():
     form = GoalRoadmapForm()
     message_form = GoalCoachMessageForm()
-    history = session.get("goal_coach_history", [])
-    display_messages = session.get("goal_coach_display", [])
-    result = session.get("goal_coach_result")
+    history, display_messages, result, target_date_text = get_coach_session(current_user.id)
 
     if request.method == "POST":
         action = request.form.get("action", "start")
 
         if action == "reset":
-            session.pop("goal_coach_history", None)
-            session.pop("goal_coach_display", None)
-            session.pop("goal_coach_result", None)
-            session.pop("goal_coach_target_date", None)
+            clear_coach_session(current_user.id)
             flash("目標設定の会話をリセットしました。", "info")
             return redirect(url_for("goals.roadmap"))
 
         if action == "save" and result and result.get("status") == "ready":
             title = result.get("goal_title") or "3か月目標"
             detail = build_saved_goal_detail(result)
-            target_date_text = session.get("goal_coach_target_date")
             target_date = date.fromisoformat(target_date_text) if target_date_text else None
 
             goal = Goal(
@@ -91,12 +88,9 @@ def roadmap():
                         ensure_ascii=False,
                     ),
                 ))
+            GoalCoachSession.query.filter_by(user_id=current_user.id).delete()
             db.session.commit()
 
-            session.pop("goal_coach_history", None)
-            session.pop("goal_coach_display", None)
-            session.pop("goal_coach_result", None)
-            session.pop("goal_coach_target_date", None)
             flash("AIコーチと作った3か月目標を保存しました。", "success")
             return redirect(url_for("main.home"))
 
@@ -113,11 +107,7 @@ def roadmap():
                 "role": "assistant",
                 "content": result.get("message", ""),
             })
-            session["goal_coach_history"] = history
-            session["goal_coach_display"] = display_messages
-            session["goal_coach_result"] = result
-            session["goal_coach_target_date"] = form.target_date.data.isoformat() if form.target_date.data else None
-            session.modified = True
+            upsert_coach_session(current_user.id, history, display_messages, result, target_date_text)
             return redirect(url_for("goals.roadmap"))
 
         if action == "start" and form.validate_on_submit():
@@ -139,10 +129,8 @@ def roadmap():
                 "role": "assistant",
                 "content": result.get("message", ""),
             })
-            session["goal_coach_history"] = history
-            session["goal_coach_display"] = display_messages
-            session["goal_coach_result"] = result
-            session.modified = True
+            new_target_date_text = form.target_date.data.isoformat() if form.target_date.data else None
+            upsert_coach_session(current_user.id, history, display_messages, result, new_target_date_text)
             return redirect(url_for("goals.roadmap"))
 
     return render_template(
@@ -152,6 +140,28 @@ def roadmap():
         display_messages=display_messages,
         result=result,
     )
+
+@goals_bp.route("/<int:goal_id>/advance-milestone", methods=["POST"])
+@login_required
+def advance_milestone(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    current = current_month_index(goal)
+    if current < 3:
+        goal.current_month_override = current + 1
+        db.session.commit()
+        flash(f"{current + 1}か月目のマイルストーンに移行しました。", "success")
+    else:
+        flash("すでに3か月目です。", "info")
+    return redirect(url_for("main.home"))
+
+@goals_bp.route("/<int:goal_id>/reset-milestone", methods=["POST"])
+@login_required
+def reset_milestone(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    goal.current_month_override = None
+    db.session.commit()
+    flash("マイルストーンを経過日数による自動判定に戻しました。", "info")
+    return redirect(url_for("main.home"))
 
 @goals_bp.route("/<int:goal_id>/today-theme", methods=["POST"])
 @login_required
@@ -163,9 +173,16 @@ def create_today_theme(goal_id):
         month_index=month_index,
     ).first()
 
-    theme = build_today_theme(current_user.id, goal, milestone)
+    recent_reflections = (
+        Reflection.query
+        .filter(Reflection.user_id == current_user.id, Reflection.daily_theme_id.isnot(None))
+        .order_by(Reflection.created_at.desc())
+        .limit(3)
+        .all()
+    )
+    theme = build_today_theme_ai(current_user.id, goal, milestone, recent_reflections)
     db.session.add(theme)
     db.session.commit()
 
-    flash("目標と今月のマイルストーンから、今日の練習テーマを作りました。", "success")
+    flash("今日の練習テーマを作りました。", "success")
     return redirect(url_for("main.home"))

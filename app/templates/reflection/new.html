@@ -7,7 +7,10 @@
     <div class="sub-card">
         <h2>今回のテーマ</h2>
         <p><strong>{{ latest_theme.theme_title }}</strong></p>
-        <p>{{ latest_theme.theme_detail }}</p>
+        <p class="preline">{{ latest_theme.theme_detail }}</p>
+        {% if latest_theme.check_point %}
+            <p><strong>振り返りポイント:</strong> {{ latest_theme.check_point }}</p>
+        {% endif %}
     </div>
 
     <form method="post">
