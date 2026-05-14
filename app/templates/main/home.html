@@ -13,20 +13,51 @@
             <p>まだ目標がありません。</p>
         {% endif %}
         <div class="button-list">
-            <a class="button" href="{{ url_for('goals.roadmap') }}">長期目標を分解する</a>
+            <a class="button" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
             <a class="button secondary" href="{{ url_for('goals.new_goal') }}">目標を設定する</a>
         </div>
     </section>
 
+    {% if latest_goal and current_milestone %}
+    <section class="card">
+        <h2>{{ current_month }}か月目のマイルストーン</h2>
+        <p><strong>{{ current_milestone.title }}</strong></p>
+        {% if current_milestone.ok_criteria %}
+            <p><strong>OK基準:</strong> {{ current_milestone.ok_criteria }}</p>
+        {% endif %}
+
+        <h2>日々の練習で意識すること</h2>
+        {% if current_practice_focus %}
+            <ul>
+                {% for item in current_practice_focus %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>この月の練習フォーカスはまだありません。</p>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}">
+            <button class="button" type="submit">この目標から今日の練習テーマを作る</button>
+        </form>
+    </section>
+    {% endif %}
+
     <section class="card">
         <h2>今日の練習テーマ</h2>
-        {% if latest_theme %}
+        {% if latest_daily_theme %}
+            <p><strong>{{ latest_daily_theme.theme_title }}</strong></p>
+            <p class="preline">{{ latest_daily_theme.theme_detail }}</p>
+            {% if latest_daily_theme.check_point %}
+                <p><strong>振り返り:</strong> {{ latest_daily_theme.check_point }}</p>
+            {% endif %}
+        {% elif latest_theme %}
             <p><strong>{{ latest_theme.theme_title }}</strong></p>
             <p>{{ latest_theme.theme_detail }}</p>
         {% else %}
             <p>まだテーマがありません。</p>
         {% endif %}
-        <a class="button secondary" href="{{ url_for('analysis.latest_theme') }}">テーマを見る</a>
+        <a class="button secondary" href="{{ url_for('analysis.latest_theme') }}">従来の練習テーマを見る</a>
     </section>
 
     <section class="card">
@@ -44,7 +75,7 @@
         <h2>メニュー</h2>
         <div class="button-list">
             <a class="button secondary" href="{{ url_for('analysis.assessment') }}">課題分析</a>
-            <a class="button secondary" href="{{ url_for('goals.roadmap') }}">長期目標ロードマップ</a>
+            <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標設定</a>
             <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログ</a>
             <a class="button secondary" href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
         </div>

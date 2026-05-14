@@ -60,6 +60,42 @@ class Goal(db.Model, TimestampMixin):
 
     user = db.relationship("User", back_populates="goals")
     assessments = db.relationship("Assessment", back_populates="goal", lazy=True)
+    milestones = db.relationship(
+        "GoalMilestone",
+        back_populates="goal",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="GoalMilestone.month_index",
+    )
+    daily_themes = db.relationship("DailyPracticeTheme", back_populates="goal", lazy=True)
+
+class GoalMilestone(db.Model, TimestampMixin):
+    __tablename__ = "goal_milestones"
+
+    id = db.Column(db.Integer, primary_key=True)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"), nullable=False)
+    month_index = db.Column(db.Integer, nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    ok_criteria = db.Column(db.Text)
+    practice_focus_json = db.Column(db.Text, nullable=False, default="[]")
+
+    goal = db.relationship("Goal", back_populates="milestones")
+    daily_themes = db.relationship("DailyPracticeTheme", back_populates="milestone", lazy=True)
+
+class DailyPracticeTheme(db.Model):
+    __tablename__ = "daily_practice_themes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    goal_id = db.Column(db.Integer, db.ForeignKey("goals.id"), nullable=False)
+    milestone_id = db.Column(db.Integer, db.ForeignKey("goal_milestones.id"), nullable=True)
+    theme_title = db.Column(db.String(255), nullable=False)
+    theme_detail = db.Column(db.Text, nullable=False)
+    check_point = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    goal = db.relationship("Goal", back_populates="daily_themes")
+    milestone = db.relationship("GoalMilestone", back_populates="daily_themes")
 
 class Assessment(db.Model):
     __tablename__ = "assessments"

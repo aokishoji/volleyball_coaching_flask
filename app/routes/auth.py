@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, current_user
 from ..extensions import db
 from ..forms import LoginForm, RegisterForm
@@ -56,5 +56,12 @@ def register():
 @auth_bp.route("/logout")
 def logout():
     logout_user()
+    for key in (
+        "goal_coach_history",
+        "goal_coach_display",
+        "goal_coach_result",
+        "goal_coach_target_date",
+    ):
+        session.pop(key, None)
     flash("ログアウトしました。", "info")
     return redirect(url_for("auth.login"))

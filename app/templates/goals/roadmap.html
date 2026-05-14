@@ -1,27 +1,76 @@
 {% extends "base.html" %}
 {% from "_form_helpers.html" import render_field %}
-{% block title %}長期目標ロードマップ{% endblock %}
+{% block title %}AI目標設定{% endblock %}
 {% block content %}
 <div class="stack">
     <section class="card">
-        <h1>長期目標ロードマップ</h1>
-        <p class="sub-link">ざっくりした目標を、バレーボールの要素・期限・OK基準・日々の練習案に分解します。</p>
-        <form method="post">
-            {{ form.hidden_tag() }}
-            {{ render_field(form.rough_goal) }}
-            {{ render_field(form.current_level) }}
-            {{ render_field(form.target_date) }}
-            {{ render_field(form.weekly_practice_days) }}
-            {{ render_field(form.focus_hint) }}
-            {{ form.submit(class_='button') }}
-        </form>
-    </section>
+        <h1>AI目標設定</h1>
+        <p class="sub-link">3か月先の抽象的な目標から始めて、AIコーチと対話しながら具体目標とマイルストーンを作ります。</p>
 
-    <section class="card">
-        <h2>入力例</h2>
-        <p class="preline">1年後の大会で優勝したい。
-今はスパイクの決定力とレセプションの安定感に波がある。
-週3回の練習で、試合で使える強みを作りたい。</p>
+        {% if not display_messages %}
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <input type="hidden" name="action" value="start">
+                {{ render_field(form.rough_goal) }}
+                {{ render_field(form.current_level) }}
+                {{ render_field(form.target_date) }}
+                {{ render_field(form.weekly_practice_days) }}
+                {{ render_field(form.focus_hint) }}
+                {{ form.submit(class_='button') }}
+            </form>
+        {% else %}
+            <div class="coach-chat">
+                {% for item in display_messages %}
+                    <div class="chat-message chat-{{ item.role }}">
+                        <div class="chat-role">{{ "選手" if item.role == "user" else "AIコーチ" }}</div>
+                        <p class="preline">{{ item.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if result and result.status == "ready" %}
+                <div class="sub-card">
+                    <h2>保存候補</h2>
+                    <p><strong>{{ result.goal_title }}</strong></p>
+                    <p class="preline">{{ result.goal_detail }}</p>
+
+                    {% if result.milestones %}
+                        <h2>3か月マイルストーン</h2>
+                        <ul>
+                            {% for milestone in result.milestones %}
+                                <li>{{ milestone }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if result.practice_focus %}
+                        <h2>日々の練習で意識すること</h2>
+                        <ul>
+                            {% for item in result.practice_focus %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="action" value="save">
+                    <button class="button" type="submit">この目標を保存する</button>
+                </form>
+            {% else %}
+                <form method="post">
+                    {{ message_form.hidden_tag() }}
+                    <input type="hidden" name="action" value="message">
+                    {{ render_field(message_form.message) }}
+                    {{ message_form.submit(class_='button') }}
+                </form>
+            {% endif %}
+
+            <form method="post">
+                <input type="hidden" name="action" value="reset">
+                <button class="button secondary" type="submit">最初からやり直す</button>
+            </form>
+        {% endif %}
     </section>
 </div>
 {% endblock %}

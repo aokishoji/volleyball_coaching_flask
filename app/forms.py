@@ -59,14 +59,14 @@ class GoalForm(FlaskForm):
 
 class GoalRoadmapForm(FlaskForm):
     rough_goal = TextAreaField(
-        "ざっくりした目標",
+        "3か月先のざっくりした目標",
         validators=[DataRequired(), Length(max=1000)]
     )
     current_level = TextAreaField(
         "今の状態・課題感",
         validators=[Optional(), Length(max=1000)]
     )
-    target_date = DateField("達成したい日", validators=[Optional()])
+    target_date = DateField("3か月後の目安日", validators=[Optional()])
     weekly_practice_days = SelectField(
         "週に練習できる日数",
         choices=[
@@ -90,7 +90,14 @@ class GoalRoadmapForm(FlaskForm):
         ],
         validators=[Optional()]
     )
-    submit = SubmitField("目標を分解する")
+    submit = SubmitField("AIコーチと目標設定を始める")
+
+class GoalCoachMessageForm(FlaskForm):
+    message = TextAreaField(
+        "AIコーチへの返答",
+        validators=[DataRequired(), Length(max=1000)]
+    )
+    submit = SubmitField("返答する")
 
 class AssessmentForm(FlaskForm):
     approach_rating = SelectField("助走", choices=RATING_CHOICES, validators=[DataRequired()])

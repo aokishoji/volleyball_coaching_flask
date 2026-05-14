@@ -186,6 +186,36 @@ textarea {
   white-space: pre-line;
 }
 
+.coach-chat {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.chat-message {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: #fff;
+}
+
+.chat-user {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.chat-assistant {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.chat-role {
+  color: var(--subtext);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
 @media (min-width: 640px) {
   .grid-two {
     grid-template-columns: 1fr 1fr;
