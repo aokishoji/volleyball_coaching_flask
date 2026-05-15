@@ -8,14 +8,29 @@
         <h2>現在の目標</h2>
         {% if latest_goal %}
             <p><strong>{{ latest_goal.goal_title }}</strong></p>
-            <p class="preline">{{ latest_goal.goal_detail }}</p>
+            {% if latest_goal.milestones %}
+                <div style="margin-top:0.75rem;">
+                    {% for m in latest_goal.milestones %}
+                    <div class="sub-card" style="margin-bottom:0.5rem; {% if m.month_index == current_month %}border-left:3px solid #4a90d9;{% endif %}">
+                        <p style="font-size:0.75rem; color:#888; margin:0 0 0.2rem;">{{ m.month_index }}か月目</p>
+                        <p style="font-size:0.9rem; margin:0;"><strong>{{ m.title }}</strong></p>
+                        {% if m.ok_criteria %}
+                            <p style="font-size:0.8rem; color:#666; margin:0.2rem 0 0;">OK基準: {{ m.ok_criteria }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="button-list" style="margin-top:0.75rem;">
+                <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
+                <a class="button secondary" href="{{ url_for('goals.edit_goal', goal_id=latest_goal.id) }}">目標を編集する</a>
+            </div>
         {% else %}
             <p>まだ目標がありません。</p>
+            <div class="button-list">
+                <a class="button" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
+            </div>
         {% endif %}
-        <div class="button-list">
-            <a class="button" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
-            <a class="button secondary" href="{{ url_for('goals.new_goal') }}">目標を設定する</a>
-        </div>
     </section>
 
     {% if latest_goal and current_milestone %}
@@ -23,10 +38,13 @@
         <h2>{{ current_month }}か月目のマイルストーン</h2>
         <p><strong>{{ current_milestone.title }}</strong></p>
         {% if current_milestone.ok_criteria %}
-            <p><strong>OK基準:</strong> {{ current_milestone.ok_criteria }}</p>
+            <div class="sub-card">
+                <p style="font-size:0.8rem; color:#888; margin:0 0 0.25rem;">OK基準</p>
+                <p style="font-size:0.9rem;">{{ current_milestone.ok_criteria }}</p>
+            </div>
         {% endif %}
         {% if current_practice_focus %}
-            <h3>日々の練習で意識すること</h3>
+            <h3 style="margin-top:0.75rem;">日々の練習で意識すること</h3>
             <ul>
                 {% for item in current_practice_focus %}
                     <li>{{ item }}</li>
@@ -62,6 +80,7 @@
             {% endif %}
             <div class="button-list">
                 <a class="button" href="{{ url_for('reflection.new_reflection') }}">振り返りを書く</a>
+                <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマを微調整する</a>
                 {% if latest_goal %}
                 <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" style="display:inline;">
                     <button class="button secondary" type="submit">テーマを作り直す</button>
@@ -78,27 +97,13 @@
         {% endif %}
     </section>
 
+    {% if latest_reflection %}
     <section class="card">
         <h2>前回の振り返り</h2>
-        {% if latest_reflection %}
-            <p><strong>できたこと:</strong> {{ latest_reflection.good_points }}</p>
-            <p><strong>次回意識:</strong> {{ latest_reflection.next_action }}</p>
-        {% else %}
-            <p>まだ振り返りがありません。</p>
-        {% endif %}
+        <p><strong>できたこと:</strong> {{ latest_reflection.good_points }}</p>
+        <p><strong>次回意識:</strong> {{ latest_reflection.next_action }}</p>
         <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログを見る</a>
     </section>
-
-    {# メニューセクション（非表示中）
-    <section class="card">
-        <h2>メニュー</h2>
-        <div class="button-list">
-            <a class="button secondary" href="{{ url_for('analysis.assessment') }}">課題分析</a>
-            <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標設定</a>
-            <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログ</a>
-            <a class="button secondary" href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
-        </div>
-    </section>
-    #}
+    {% endif %}
 </div>
 {% endblock %}

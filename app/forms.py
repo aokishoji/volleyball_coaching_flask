@@ -1,7 +1,8 @@
+from datetime import date
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField, PasswordField, SubmitField, SelectField,
-    SelectMultipleField, TextAreaField, DateField, IntegerField
+    SelectMultipleField, TextAreaField, DateField, IntegerField, FloatField
 )
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional, NumberRange
 
@@ -17,6 +18,28 @@ AGE_GROUP_CHOICES = [
     ("high_1", "高1"), ("high_2", "高2"), ("high_3", "高3"),
 ]
 
+GENDER_CHOICES = [
+    ("", "選択してください"),
+    ("male", "男性"),
+    ("female", "女性"),
+    ("no_answer", "回答しない"),
+]
+
+POSITION_CHOICES = [
+    ("", "選択してください"),
+    ("WS", "ウイングスパイカー"),
+    ("MB", "ミドルブロッカー"),
+    ("S", "セッター"),
+    ("L", "リベロ"),
+    ("OP", "オポジット"),
+]
+
+_current_year = date.today().year
+YEAR_CHOICES = [("", "年")] + [(str(y), str(y)) for y in range(_current_year, _current_year - 30, -1)]
+MONTH_CHOICES = [("", "月")] + [(str(m), f"{m}月") for m in range(1, 13)]
+DAY_CHOICES = [("", "日")] + [(str(d), f"{d}日") for d in range(1, 32)]
+BIRTH_YEAR_CHOICES = [("", "年")] + [(str(y), str(y)) for y in range(_current_year, 1939, -1)]
+
 class LoginForm(FlaskForm):
     email = StringField("メールアドレス", validators=[DataRequired(), Email()])
     password = PasswordField("パスワード", validators=[DataRequired()])
@@ -30,23 +53,13 @@ class RegisterForm(FlaskForm):
         "パスワード確認",
         validators=[DataRequired(), EqualTo("password", message="パスワードが一致しません")]
     )
-    age_group = SelectField(
-        "学年/年代区分",
-        choices=AGE_GROUP_CHOICES,
-        validators=[Optional()]
-    )
-    position = SelectField(
-        "ポジション",
-        choices=[
-            ("", "選択してください"),
-            ("WS", "ウイングスパイカー"),
-            ("MB", "ミドルブロッカー"),
-            ("S", "セッター"),
-            ("L", "リベロ"),
-            ("OP", "オポジット"),
-        ],
-        validators=[Optional()]
-    )
+    birth_year = SelectField("生年", choices=BIRTH_YEAR_CHOICES, validators=[Optional()])
+    birth_month = SelectField("生月", choices=MONTH_CHOICES, validators=[Optional()])
+    birth_day = SelectField("生日", choices=DAY_CHOICES, validators=[Optional()])
+    gender = SelectField("性別", choices=GENDER_CHOICES, validators=[Optional()])
+    position = SelectField("ポジション", choices=POSITION_CHOICES, validators=[Optional()])
+    volleyball_start_year = SelectField("バレー開始年", choices=YEAR_CHOICES, validators=[Optional()])
+    volleyball_start_month = SelectField("バレー開始月", choices=MONTH_CHOICES, validators=[Optional()])
     submit = SubmitField("登録する")
 
 class GoalForm(FlaskForm):
@@ -174,25 +187,42 @@ class ReflectionForm(FlaskForm):
 
 class ProfileForm(FlaskForm):
     name = StringField("表示名", validators=[DataRequired(), Length(max=100)])
-    age_group = SelectField(
-        "学年/年代区分",
-        choices=AGE_GROUP_CHOICES,
-        validators=[Optional()]
-    )
-    position = SelectField(
-        "ポジション",
-        choices=[
-            ("", "選択してください"),
-            ("WS", "ウイングスパイカー"),
-            ("MB", "ミドルブロッカー"),
-            ("S", "セッター"),
-            ("L", "リベロ"),
-            ("OP", "オポジット"),
-        ],
-        validators=[Optional()]
-    )
-    experience_years = IntegerField(
-        "経験年数",
-        validators=[Optional(), NumberRange(min=0, max=50)]
-    )
+    birth_year = SelectField("生年", choices=BIRTH_YEAR_CHOICES, validators=[Optional()])
+    birth_month = SelectField("生月", choices=MONTH_CHOICES, validators=[Optional()])
+    birth_day = SelectField("生日", choices=DAY_CHOICES, validators=[Optional()])
+    gender = SelectField("性別", choices=GENDER_CHOICES, validators=[Optional()])
+    position = SelectField("ポジション", choices=POSITION_CHOICES, validators=[Optional()])
+    volleyball_start_year = SelectField("バレー開始年", choices=YEAR_CHOICES, validators=[Optional()])
+    volleyball_start_month = SelectField("バレー開始月", choices=MONTH_CHOICES, validators=[Optional()])
     submit = SubmitField("更新する")
+
+
+class PhysicalRecordForm(FlaskForm):
+    recorded_date = DateField("計測日", validators=[DataRequired()])
+    height = FloatField("身長 (cm)", validators=[Optional(), NumberRange(min=50, max=250)])
+    weight = FloatField("体重 (kg)", validators=[Optional(), NumberRange(min=10, max=200)])
+    finger_height = FloatField("指高 (cm)", validators=[Optional(), NumberRange(min=100, max=350)])
+    max_reach = FloatField("最高到達点 (cm)", validators=[Optional(), NumberRange(min=100, max=400)])
+    submit = SubmitField("記録する")
+
+
+class GoalEditForm(FlaskForm):
+    goal_title = StringField("目標タイトル", validators=[DataRequired(), Length(max=255)])
+    goal_detail = TextAreaField("目標詳細", validators=[Optional(), Length(max=2000)])
+    m1_title = StringField("1か月目 到達目標", validators=[Optional(), Length(max=255)])
+    m1_ok_criteria = TextAreaField("1か月目 OK基準", validators=[Optional(), Length(max=500)])
+    m1_practice_focus = TextAreaField("1か月目 日々の練習で意識すること（1行1項目）", validators=[Optional()])
+    m2_title = StringField("2か月目 到達目標", validators=[Optional(), Length(max=255)])
+    m2_ok_criteria = TextAreaField("2か月目 OK基準", validators=[Optional(), Length(max=500)])
+    m2_practice_focus = TextAreaField("2か月目 日々の練習で意識すること（1行1項目）", validators=[Optional()])
+    m3_title = StringField("3か月目 到達目標", validators=[Optional(), Length(max=255)])
+    m3_ok_criteria = TextAreaField("3か月目 OK基準", validators=[Optional(), Length(max=500)])
+    m3_practice_focus = TextAreaField("3か月目 日々の練習で意識すること（1行1項目）", validators=[Optional()])
+    submit = SubmitField("保存する")
+
+
+class DailyThemeEditForm(FlaskForm):
+    theme_title = StringField("テーマタイトル", validators=[DataRequired(), Length(max=255)])
+    theme_detail = TextAreaField("テーマの説明", validators=[DataRequired(), Length(max=2000)])
+    check_point = TextAreaField("振り返りポイント", validators=[Optional(), Length(max=500)])
+    submit = SubmitField("保存する")

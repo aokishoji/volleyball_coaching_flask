@@ -39,11 +39,29 @@ def register():
         db.session.add(user)
         db.session.flush()
 
+        from datetime import date as date_type
+
+        birth_date = None
+        if form.birth_year.data and form.birth_month.data and form.birth_day.data:
+            try:
+                birth_date = date_type(int(form.birth_year.data), int(form.birth_month.data), int(form.birth_day.data))
+            except ValueError:
+                pass
+
+        volleyball_start_date = None
+        if form.volleyball_start_year.data and form.volleyball_start_month.data:
+            try:
+                volleyball_start_date = date_type(int(form.volleyball_start_year.data), int(form.volleyball_start_month.data), 1)
+            except ValueError:
+                pass
+
         profile = Profile(
             user_id=user.id,
             name=form.name.data,
-            age_group=form.age_group.data or None,
+            birth_date=birth_date,
+            gender=form.gender.data or None,
             position=form.position.data or None,
+            volleyball_start_date=volleyball_start_date,
         )
         db.session.add(profile)
         db.session.commit()

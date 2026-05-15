@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}身体データ{% endblock %}
+{% block content %}
+<div class="stack">
+    <section class="card">
+        <h1>身体データを記録</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.recorded_date) }}
+            {{ render_field(form.height) }}
+            {{ render_field(form.weight) }}
+            {{ render_field(form.finger_height) }}
+            {{ render_field(form.max_reach) }}
+            {{ form.submit(class_='button') }}
+        </form>
+    </section>
+
+    {% if records %}
+    <section class="card">
+        <h2>記録履歴</h2>
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+            <thead>
+                <tr style="border-bottom:1px solid #ddd; text-align:left;">
+                    <th style="padding:0.4rem;">日付</th>
+                    <th style="padding:0.4rem;">身長</th>
+                    <th style="padding:0.4rem;">体重</th>
+                    <th style="padding:0.4rem;">指高</th>
+                    <th style="padding:0.4rem;">最高到達点</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr style="border-bottom:1px solid #f0f0f0;">
+                    <td style="padding:0.4rem;">{{ r.recorded_date }}</td>
+                    <td style="padding:0.4rem;">{{ r.height ~ ' cm' if r.height else '—' }}</td>
+                    <td style="padding:0.4rem;">{{ r.weight ~ ' kg' if r.weight else '—' }}</td>
+                    <td style="padding:0.4rem;">{{ r.finger_height ~ ' cm' if r.finger_height else '—' }}</td>
+                    <td style="padding:0.4rem;">{{ r.max_reach ~ ' cm' if r.max_reach else '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+
+    <a class="button secondary" href="{{ url_for('profile.edit_profile') }}">← プロフィールに戻る</a>
+</div>
+{% endblock %}

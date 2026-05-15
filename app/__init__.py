@@ -41,4 +41,28 @@ def create_app():
         db.create_all()
         print("Database initialized.")
 
+    @app.cli.command("clear-db")
+    def clear_db():
+        """全テーブルのデータを削除する（テーブル構造は維持）"""
+        tables = [
+            "reflections",
+            "practice_themes",
+            "deep_dive_answers",
+            "assessments",
+            "daily_practice_themes",
+            "goal_milestones",
+            "goals",
+            "goal_coach_sessions",
+            "profiles",
+            "users",
+        ]
+        with db.engine.connect() as conn:
+            conn.execute(db.text("PRAGMA foreign_keys = OFF"))
+            for table in tables:
+                conn.execute(db.text(f"DELETE FROM {table}"))
+                print(f"Cleared: {table}")
+            conn.execute(db.text("PRAGMA foreign_keys = ON"))
+            conn.commit()
+        print("All data cleared.")
+
     return app

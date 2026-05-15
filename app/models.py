@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db, login_manager
@@ -44,8 +44,34 @@ class Profile(db.Model, TimestampMixin):
     age_group = db.Column(db.String(50))
     position = db.Column(db.String(50))
     experience_years = db.Column(db.Integer)
+    birth_date = db.Column(db.Date, nullable=True)
+    volleyball_start_date = db.Column(db.Date, nullable=True)
+    gender = db.Column(db.String(20), nullable=True)
 
     user = db.relationship("User", back_populates="profile")
+
+    @property
+    def age(self):
+        if not self.birth_date:
+            return None
+        today = date.today()
+        return today.year - self.birth_date.year - (
+            (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+        )
+
+    @property
+    def volleyball_experience(self):
+        if not self.volleyball_start_date:
+            return None
+        today = date.today()
+        total_months = (today.year - self.volleyball_start_date.year) * 12 + (today.month - self.volleyball_start_date.month)
+        total_months = max(total_months, 0)
+        years, months = divmod(total_months, 12)
+        if years == 0:
+            return f"{months}か月"
+        if months == 0:
+            return f"{years}年"
+        return f"{years}年{months}か月"
 
 class Goal(db.Model, TimestampMixin):
     __tablename__ = "goals"
@@ -97,6 +123,21 @@ class DailyPracticeTheme(db.Model):
 
     goal = db.relationship("Goal", back_populates="daily_themes")
     milestone = db.relationship("GoalMilestone", back_populates="daily_themes")
+
+class PhysicalRecord(db.Model):
+    __tablename__ = "physical_records"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    recorded_date = db.Column(db.Date, nullable=False)
+    height = db.Column(db.Float, nullable=True)
+    weight = db.Column(db.Float, nullable=True)
+    finger_height = db.Column(db.Float, nullable=True)
+    max_reach = db.Column(db.Float, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship("User", backref=db.backref("physical_records", lazy=True, order_by="PhysicalRecord.recorded_date.desc()"))
+
 
 class GoalCoachSession(db.Model, TimestampMixin):
     """AI目標設定の会話セッション（ユーザーごとに1件）"""

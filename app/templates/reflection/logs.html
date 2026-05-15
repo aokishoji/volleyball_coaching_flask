@@ -20,8 +20,10 @@
 
     <section class="card">
         <h2>練習記録</h2>
-        {% if daily_themes %}
+        {% set has_records = daily_themes | selectattr('reflections') | list %}
+        {% if has_records %}
             {% for theme in daily_themes %}
+            {% if theme.reflections %}
                 <div class="list-item">
                     <p style="font-size:0.8rem; color:#888;">{{ theme.created_at | jst('%Y-%m-%d') }}</p>
 
@@ -34,31 +36,28 @@
                         {% endif %}
                     </div>
 
-                    {% if theme.reflections %}
-                        {% for r in theme.reflections %}
-                        <div style="border-left:3px solid #4a90d9; padding-left:0.75rem; margin-top:0.5rem;">
-                            <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">振り返り — {{ r.created_at | jst }}</p>
-                            <p style="font-size:0.85rem;">
-                                <strong>テーマを意識できたか:</strong>
-                                {% if r.theme_applied == 'yes' %}はい
-                                {% elif r.theme_applied == 'partial' %}一部
-                                {% else %}いいえ{% endif %}
-                            </p>
-                            <p style="font-size:0.85rem;"><strong>できたこと:</strong> {{ r.good_points }}</p>
-                            <p style="font-size:0.85rem;"><strong>できなかったこと:</strong> {{ r.bad_points }}</p>
-                            {% if r.cause_hypothesis %}
-                                <p style="font-size:0.85rem;"><strong>原因の仮説:</strong> {{ r.cause_hypothesis }}</p>
-                            {% endif %}
-                            <p style="font-size:0.85rem;"><strong>次回意識すること:</strong> {{ r.next_action }}</p>
-                            {% if r.coach_question %}
-                                <p style="font-size:0.85rem;"><strong>コーチへの質問:</strong> {{ r.coach_question }}</p>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <p style="font-size:0.85rem; color:#aaa; margin-top:0.5rem;">まだ振り返りがありません</p>
-                    {% endif %}
+                    {% for r in theme.reflections | reverse %}
+                    <div style="border-left:3px solid #4a90d9; padding-left:0.75rem; margin-top:0.5rem;">
+                        <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">振り返り — {{ r.created_at | jst }}</p>
+                        <p style="font-size:0.85rem;">
+                            <strong>テーマを意識できたか:</strong>
+                            {% if r.theme_applied == 'yes' %}はい
+                            {% elif r.theme_applied == 'partial' %}一部
+                            {% else %}いいえ{% endif %}
+                        </p>
+                        <p style="font-size:0.85rem;"><strong>できたこと:</strong> {{ r.good_points }}</p>
+                        <p style="font-size:0.85rem;"><strong>できなかったこと:</strong> {{ r.bad_points }}</p>
+                        {% if r.cause_hypothesis %}
+                            <p style="font-size:0.85rem;"><strong>原因の仮説:</strong> {{ r.cause_hypothesis }}</p>
+                        {% endif %}
+                        <p style="font-size:0.85rem;"><strong>次回意識すること:</strong> {{ r.next_action }}</p>
+                        {% if r.coach_question %}
+                            <p style="font-size:0.85rem;"><strong>コーチへの質問:</strong> {{ r.coach_question }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
                 </div>
+            {% endif %}
             {% endfor %}
         {% else %}
             <p>まだ記録がありません。</p>

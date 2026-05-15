@@ -10,8 +10,23 @@
         {{ render_field(form.email) }}
         {{ render_field(form.password) }}
         {{ render_field(form.password_confirm) }}
-        {{ render_field(form.age_group) }}
+        <div class="form-group">
+            <label>生年月日</label>
+            <div style="display:flex; gap:0.5rem;">
+                {{ form.birth_year(class_='form-control', style='width:auto;') }}
+                {{ form.birth_month(class_='form-control', style='width:auto;') }}
+                {{ form.birth_day(class_='form-control', style='width:auto;') }}
+            </div>
+        </div>
+        {{ render_field(form.gender) }}
         {{ render_field(form.position) }}
+        <div class="form-group">
+            <label>バレーボールを始めた年月</label>
+            <div style="display:flex; gap:0.5rem;">
+                {{ form.volleyball_start_year(class_='form-control', style='width:auto;') }}
+                {{ form.volleyball_start_month(class_='form-control', style='width:auto;') }}
+            </div>
+        </div>
         {{ form.submit(class_='button') }}
     </form>
     <p class="sub-link"><a href="{{ url_for('auth.login') }}">ログインへ戻る</a></p>

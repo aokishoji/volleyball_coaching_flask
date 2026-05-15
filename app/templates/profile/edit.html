@@ -2,15 +2,41 @@
 {% from "_form_helpers.html" import render_field %}
 {% block title %}プロフィール{% endblock %}
 {% block content %}
-<div class="card">
-    <h1>プロフィール</h1>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        {{ render_field(form.name) }}
-        {{ render_field(form.age_group) }}
-        {{ render_field(form.position) }}
-        {{ render_field(form.experience_years) }}
-        {{ form.submit(class_='button') }}
-    </form>
+<div class="stack">
+    <div class="card">
+        <h1>プロフィール</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.name) }}
+            <div class="form-group">
+                <label>生年月日</label>
+                <div style="display:flex; gap:0.5rem;">
+                    {{ form.birth_year(class_='form-control', style='width:auto;') }}
+                    {{ form.birth_month(class_='form-control', style='width:auto;') }}
+                    {{ form.birth_day(class_='form-control', style='width:auto;') }}
+                </div>
+            </div>
+            {% if profile and profile.age is not none %}
+                <p style="font-size:0.85rem; color:#888; margin-top:-0.5rem;">現在の年齢: {{ profile.age }}歳</p>
+            {% endif %}
+            {{ render_field(form.gender) }}
+            {{ render_field(form.position) }}
+            <div class="form-group">
+                <label>バレーボールを始めた年月</label>
+                <div style="display:flex; gap:0.5rem;">
+                    {{ form.volleyball_start_year(class_='form-control', style='width:auto;') }}
+                    {{ form.volleyball_start_month(class_='form-control', style='width:auto;') }}
+                </div>
+            </div>
+            {% if profile and profile.volleyball_experience is not none %}
+                <p style="font-size:0.85rem; color:#888; margin-top:-0.5rem;">経験年数: {{ profile.volleyball_experience }}</p>
+            {% endif %}
+            {{ form.submit(class_='button') }}
+        </form>
+    </div>
+    <div class="card">
+        <h2>身体データ</h2>
+        <a class="button secondary" href="{{ url_for('profile.physical') }}">身体データを記録・確認する</a>
+    </div>
 </div>
 {% endblock %}

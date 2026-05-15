@@ -1,10 +1,10 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from ..extensions import db
-from ..forms import GoalForm, GoalRoadmapForm, GoalCoachMessageForm
-from ..models import Goal, GoalMilestone, GoalCoachSession, Reflection
+from ..forms import GoalForm, GoalRoadmapForm, GoalCoachMessageForm, GoalEditForm, DailyThemeEditForm
+from ..models import Goal, GoalMilestone, GoalCoachSession, Reflection, DailyPracticeTheme
 from ..services.goal_service import build_goal_text
 from ..services.ai_goal_coach_service import (
     ask_goal_coach,
@@ -51,6 +51,9 @@ def roadmap():
     form = GoalRoadmapForm()
     message_form = GoalCoachMessageForm()
     history, display_messages, result, target_date_text = get_coach_session(current_user.id)
+
+    if request.method == "GET" and not history:
+        form.target_date.data = date.today() + timedelta(days=90)
 
     if request.method == "POST":
         action = request.form.get("action", "start")
@@ -141,6 +144,67 @@ def roadmap():
         result=result,
     )
 
+@goals_bp.route("/<int:goal_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_goal(goal_id):
+    goal = Goal.query.filter_by(id=goal_id, user_id=current_user.id).first_or_404()
+    milestones = {m.month_index: m for m in goal.milestones}
+    form = GoalEditForm()
+
+    if request.method == "GET":
+        form.goal_title.data = goal.goal_title
+        form.goal_detail.data = goal.goal_detail
+        for idx, prefix in [(1, "m1"), (2, "m2"), (3, "m3")]:
+            m = milestones.get(idx)
+            if m:
+                getattr(form, f"{prefix}_title").data = m.title
+                getattr(form, f"{prefix}_ok_criteria").data = m.ok_criteria
+                focus = json.loads(m.practice_focus_json or "[]")
+                getattr(form, f"{prefix}_practice_focus").data = "\n".join(focus)
+
+    if form.validate_on_submit():
+        goal.goal_title = form.goal_title.data
+        goal.goal_detail = form.goal_detail.data or ""
+        for idx, prefix in [(1, "m1"), (2, "m2"), (3, "m3")]:
+            m = milestones.get(idx)
+            title = getattr(form, f"{prefix}_title").data or ""
+            ok_criteria = getattr(form, f"{prefix}_ok_criteria").data or ""
+            focus_raw = getattr(form, f"{prefix}_practice_focus").data or ""
+            focus_list = [line.strip() for line in focus_raw.splitlines() if line.strip()]
+            if m:
+                m.title = title
+                m.ok_criteria = ok_criteria
+                m.practice_focus_json = json.dumps(focus_list, ensure_ascii=False)
+            elif title:
+                db.session.add(GoalMilestone(
+                    goal_id=goal.id,
+                    month_index=idx,
+                    title=title,
+                    ok_criteria=ok_criteria,
+                    practice_focus_json=json.dumps(focus_list, ensure_ascii=False),
+                ))
+        db.session.commit()
+        flash("目標を更新しました。", "success")
+        return redirect(url_for("main.home"))
+
+    return render_template("goals/edit.html", form=form, goal=goal)
+
+@goals_bp.route("/theme/<int:theme_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_theme(theme_id):
+    theme = DailyPracticeTheme.query.filter_by(id=theme_id, user_id=current_user.id).first_or_404()
+    form = DailyThemeEditForm(obj=theme)
+
+    if form.validate_on_submit():
+        theme.theme_title = form.theme_title.data
+        theme.theme_detail = form.theme_detail.data
+        theme.check_point = form.check_point.data or ""
+        db.session.commit()
+        flash("テーマを更新しました。", "success")
+        return redirect(url_for("main.home"))
+
+    return render_template("goals/theme_edit.html", form=form, theme=theme)
+
 @goals_bp.route("/<int:goal_id>/advance-milestone", methods=["POST"])
 @login_required
 def advance_milestone(goal_id):
@@ -184,5 +248,5 @@ def create_today_theme(goal_id):
     db.session.add(theme)
     db.session.commit()
 
-    flash("今日の練習テーマを作りました。", "success")
+    flash("今取り組むテーマを作りました。", "success")
     return redirect(url_for("main.home"))

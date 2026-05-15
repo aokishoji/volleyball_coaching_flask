@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_form_helpers.html" import render_field %}
+{% block title %}目標を編集{% endblock %}
+{% block content %}
+<div class="stack">
+    <section class="card">
+        <h1>目標を編集</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.goal_title) }}
+            {{ render_field(form.goal_detail) }}
+
+            <h2 style="margin-top:1.5rem;">マイルストーン</h2>
+
+            {% for idx, prefix, label in [
+                (1, 'm1', '1か月目'),
+                (2, 'm2', '2か月目'),
+                (3, 'm3', '3か月目')
+            ] %}
+            <div class="sub-card" style="margin-bottom:1rem;">
+                <p style="font-weight:bold; margin-bottom:0.5rem;">{{ label }}</p>
+                {{ render_field(form[prefix ~ '_title']) }}
+                {{ render_field(form[prefix ~ '_ok_criteria']) }}
+                {{ render_field(form[prefix ~ '_practice_focus']) }}
+            </div>
+            {% endfor %}
+
+            {{ form.submit(class_='button') }}
+        </form>
+    </section>
+    <a class="button secondary" href="{{ url_for('main.home') }}">← ホームに戻る</a>
+</div>
+{% endblock %}
