@@ -62,6 +62,54 @@ a:hover { text-decoration: underline; }
   padding-bottom: 36px;
 }
 
+/* ── 目標階層ウィジェット ── */
+.goal-hierarchy {
+  display: flex;
+  flex-direction: column;
+}
+
+.goal-layer {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 14px 16px;
+}
+
+.goal-layer.layer-1 { border-left: 4px solid #2563eb; }
+.goal-layer.layer-2 { border-left: 4px solid #16a34a; }
+.goal-layer.layer-3 { border-left: 4px solid #b45309; }
+
+.layer-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+.layer-1 .layer-label { color: #2563eb; }
+.layer-2 .layer-label { color: #16a34a; }
+.layer-3 .layer-label { color: #b45309; }
+
+.goal-connector {
+  width: 2px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 auto;
+}
+
+.layer-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+
+.layer-sub {
+  font-size: 0.8rem;
+  color: var(--subtext);
+  margin: 0;
+}
+
 /* AI loading overlay */
 @keyframes ai-spin { to { transform: rotate(360deg); } }
 .ai-loading-overlay {
