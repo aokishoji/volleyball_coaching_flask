@@ -6,6 +6,10 @@ from ..services.goal_progress_service import current_month_index, practice_focus
 
 main_bp = Blueprint("main", __name__)
 
+@main_bp.route("/manual")
+def manual():
+    return render_template("manual/index.html")
+
 @main_bp.route("/")
 @login_required
 def home():

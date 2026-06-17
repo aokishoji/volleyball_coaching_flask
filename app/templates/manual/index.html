@@ -1,0 +1,674 @@
+{% extends "base.html" %}
+{% block title %}ユーザーズマニュアル | Volley Coach{% endblock %}
+{% block content %}
+
+<style>
+/* ── マニュアル専用スタイル ── */
+.m-hero { padding: 20px 0 8px; }
+.m-hero h1 { margin: 0 0 6px; font-size: 21px; line-height: 1.3; }
+.m-hero p  { margin: 0; color: var(--subtext); font-size: 14px; }
+
+.m-toc { margin: 14px 0; }
+.m-toc ol { margin: 8px 0 0; padding-left: 20px; }
+.m-toc li { margin: 5px 0; }
+.m-toc a  { font-size: 14px; }
+
+.m-section { margin-bottom: 0; scroll-margin-top: 72px; }
+.m-section h2 {
+  font-size: 17px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 14px;
+  color: var(--primary);
+}
+.m-section h3 { font-size: 15px; margin: 18px 0 8px; }
+
+/* 機能グリッド */
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+.feature-card { background: var(--info); border-radius: 12px; padding: 11px 12px; font-size: 13px; }
+.feature-card .icon { font-size: 20px; margin-bottom: 3px; }
+.feature-card strong { display: block; margin-bottom: 3px; font-size: 14px; }
+@media (min-width: 560px) { .feature-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* 吹き出し */
+.callout { border-radius: 12px; padding: 11px 13px; margin: 12px 0; font-size: 14px; }
+.callout-info { background: var(--info);    border-left: 4px solid var(--primary); }
+.callout-tip  { background: var(--success); border-left: 4px solid #16a34a; }
+.callout-warn { background: var(--warning); border-left: 4px solid #d97706; }
+.callout-head { font-weight: 700; margin-bottom: 5px; }
+.callout ul   { margin: 6px 0 0; padding-left: 18px; }
+
+/* テーブル */
+.m-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+.m-table th, .m-table td { border: 1px solid var(--border); padding: 7px 9px; text-align: left; vertical-align: top; }
+.m-table th { background: var(--info); font-weight: 700; white-space: nowrap; }
+.m-table tr:nth-child(even) td { background: #fafbfd; }
+
+/* 全体フロー */
+.flow-steps { display: flex; flex-direction: column; gap: 3px; margin: 10px 0; }
+.flow-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 7px 11px; background: var(--info); border-radius: 10px;
+  font-size: 14px;
+}
+.flow-step .num {
+  background: var(--primary); color: #fff; border-radius: 50%;
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.flow-arrow { text-align: center; color: var(--subtext); font-size: 16px; line-height: 1; }
+.flow-note  { font-size: 11px; color: var(--subtext); margin-left: 2px; }
+
+/* ステップブロック */
+.step-block { margin-top: 22px; }
+.step-block + .step-block { border-top: 1px solid var(--border); padding-top: 22px; }
+.step-num {
+  display: inline-block;
+  background: var(--primary); color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 20px;
+  margin-bottom: 6px;
+}
+.step-block h3 { margin: 0 0 8px; font-size: 15px; }
+
+/* スクリーンショット */
+.screenshot-wrap { margin: 14px 0; }
+.screenshot-wrap figcaption { font-size: 12px; color: var(--subtext); text-align: center; margin-top: 5px; }
+.screenshot {
+  width: 100%; max-width: 390px;
+  display: block; margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+}
+.screenshot-placeholder {
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--subtext);
+  font-size: 13px;
+  max-width: 390px;
+  margin: 0 auto;
+  display: none;
+}
+
+/* Q&A */
+.qa-item { border: 1px solid var(--border); border-radius: 12px; margin: 9px 0; overflow: hidden; }
+.qa-item summary {
+  padding: 11px 13px;
+  font-weight: 600; font-size: 14px;
+  cursor: pointer; list-style: none;
+  display: flex; align-items: flex-start; gap: 7px;
+  background: #fafbfd;
+}
+.qa-item summary::before { content: "Q."; color: var(--primary); font-weight: 700; flex-shrink: 0; }
+.qa-item summary::-webkit-details-marker { display: none; }
+.qa-item[open] > summary { border-bottom: 1px solid var(--border); background: var(--info); }
+.qa-answer {
+  padding: 11px 13px; font-size: 13px; line-height: 1.6;
+}
+.qa-a-label { color: #16a34a; font-weight: 700; }
+
+/* ページトップボタン */
+.top-btn {
+  position: fixed; bottom: 20px; right: 16px;
+  background: var(--primary); color: #fff;
+  border-radius: 50%; width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  z-index: 100;
+}
+.top-btn:hover { background: var(--primary-dark); text-decoration: none; }
+
+code.url {
+  background: var(--bg); padding: 2px 8px;
+  border-radius: 6px; font-size: 14px;
+  border: 1px solid var(--border);
+  word-break: break-all;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.screenshot').forEach(function (img) {
+    img.addEventListener('error', function () {
+      this.style.display = 'none';
+      var ph = this.parentElement.querySelector('.screenshot-placeholder');
+      if (ph) ph.style.display = 'block';
+    });
+  });
+});
+</script>
+
+<!-- ヒーロー -->
+<div class="m-hero">
+  <h1>📋 Volley Coach ユーザーズマニュアル</h1>
+  <p>バレーボールコーチ・選手向け ／ 最終更新：2026年6月</p>
+</div>
+
+<!-- 目次 -->
+<div class="card m-toc">
+  <strong>目次</strong>
+  <ol>
+    <li><a href="#s1">このアプリでできること</a></li>
+    <li><a href="#s2">はじめる前に（準備）</a></li>
+    <li><a href="#s3">基本的な使い方</a></li>
+    <li><a href="#s4">よくある操作（Q&amp;A）</a></li>
+    <li><a href="#s5">注意事項・困ったときは</a></li>
+  </ol>
+</div>
+
+<div class="stack">
+
+<!-- ═══════════════ SECTION 1 ═══════════════ -->
+<section id="s1" class="card m-section">
+  <h2>1. このアプリでできること</h2>
+
+  <p><strong>Volley Coach</strong> は、バレーボール選手が <strong>3か月で確実に上達する</strong> ための練習計画・記録・振り返りをサポートするアプリです。スマートフォンやパソコンのブラウザ（インターネット閲覧ソフト）でURLにアクセスするだけで使えます。インストールは不要です。</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">🎯</div>
+      <strong>3か月目標設定</strong>
+      AIコーチと会話しながら具体的な目標と月ごとの計画を立てる
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔍</div>
+      <strong>課題分析</strong>
+      スパイクの技術を10項目で自己評価し、今直すべき課題を絞り込む
+    </div>
+    <div class="feature-card">
+      <div class="icon">📅</div>
+      <strong>今日のテーマ</strong>
+      その日の練習で意識すべきことを自動提案
+    </div>
+    <div class="feature-card">
+      <div class="icon">📝</div>
+      <strong>振り返り記録</strong>
+      練習後にできたこと・できなかったことを記録する習慣をつける
+    </div>
+    <div class="feature-card">
+      <div class="icon">📈</div>
+      <strong>成長ログ</strong>
+      過去すべての振り返りをまとめて閲覧できる
+    </div>
+    <div class="feature-card">
+      <div class="icon">📏</div>
+      <strong>身体データ記録</strong>
+      身長・体重・最高到達点（ジャンプ力）などを定期記録する
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-head">コーチの方へ：指導にどう役立つか</div>
+    <ul>
+      <li><strong>練習前：</strong>選手が「今日のテーマ」を把握して来るため、指示の時間を短縮できます</li>
+      <li><strong>練習中：</strong>練習テーマに「コーチに見てもらうポイント」が表示されるため、観察のヒントになります</li>
+      <li><strong>練習後：</strong>振り返りの「コーチに聞きたいこと」欄を通じて、選手の疑問を事前に把握できます</li>
+      <li><strong>3か月後：</strong>「OK基準」が最初から設定されるため、目標達成を客観的に判断できます</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ SECTION 2 ═══════════════ -->
+<section id="s2" class="card m-section">
+  <h2>2. はじめる前に（準備）</h2>
+
+  <h3>必要なもの</h3>
+  <table class="m-table">
+    <tr><th>必要なもの</th><th>補足</th></tr>
+    <tr><td>スマートフォン・タブレット・パソコンのいずれか</td><td>どれか1つあればOKです</td></tr>
+    <tr><td>インターネット接続（Wi-Fiまたはモバイル通信）</td><td>常時接続は不要ですが、操作中は必要です</td></tr>
+    <tr><td>メールアドレス</td><td>選手1人につき1つ。ログインIDとして使います</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <div class="callout-head">アプリのインストールは不要です</div>
+    スマホのブラウザ（SafariやChromeなど）でURLにアクセスするだけで使えます。
+  </div>
+
+  <h3>アクセス方法</h3>
+  <ol>
+    <li>スマートフォンまたはパソコンのブラウザを開く</li>
+    <li>アドレスバー（URLを入力する場所）に入力する：<br>
+      <code class="url">https://coach.aokishoji.com</code></li>
+    <li>ログイン画面が表示される</li>
+  </ol>
+
+  <figure class="screenshot-wrap">
+    <img src="{{ url_for('static', filename='images/manual/01_login.png') }}"
+         class="screenshot" alt="ログイン画面">
+    <div class="screenshot-placeholder">📱 ログイン画面</div>
+    <figcaption>▲ 最初に表示されるログイン画面</figcaption>
+  </figure>
+</section>
+
+<!-- ═══════════════ SECTION 3 ═══════════════ -->
+<section id="s3" class="card m-section">
+  <h2>3. 基本的な使い方</h2>
+
+  <h3>全体の流れ</h3>
+  <div class="flow-steps">
+    <div class="flow-step"><span class="num">1</span><span>アカウント作成・ログイン <span class="flow-note">（初回のみ）</span></span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">2</span><span>3か月目標を立てる <span class="flow-note">（初回のみ）</span></span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">3</span><span>スパイク自己診断 → 深掘り → 練習テーマ生成 <span class="flow-note">（初回のみ）</span></span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">4</span><span>【毎日】ホーム画面で今日のテーマを確認する</span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">5</span><span>【毎日】練習後に振り返りを書く</span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">6</span><span>1か月ごとにマイルストーン（中間目標）を確認・更新する</span></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><span class="num">7</span><span>3か月後：成長ログで振り返る</span></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-block" id="step1">
+    <span class="step-num">STEP 1 ── アカウントを作る（初回のみ）</span>
+    <h3>新規登録からアカウントを作る</h3>
+    <p>初めて使う場合は、ログイン画面の <strong>「新規登録」リンク</strong> をタップして登録画面へ進みます。</p>
+    <ol>
+      <li>下の表の項目を入力する</li>
+      <li><strong>「登録する」ボタン</strong> を押す</li>
+      <li>ログイン画面に戻るので、メールアドレスとパスワードを入力して <strong>「ログイン」</strong> を押す</li>
+    </ol>
+    <table class="m-table">
+      <tr><th>入力項目</th><th>説明</th></tr>
+      <tr><td>表示名</td><td>アプリ上に表示される名前（ニックネームでもOK）</td></tr>
+      <tr><td>メールアドレス</td><td>ログインIDになります（登録後は変更不可）</td></tr>
+      <tr><td>パスワード</td><td>8文字以上。英数字の組み合わせがおすすめ</td></tr>
+      <tr><td>パスワード確認</td><td>同じパスワードをもう一度入力</td></tr>
+      <tr><td>生年月日</td><td>（任意）年齢を自動計算します</td></tr>
+      <tr><td>性別</td><td>（任意）男性・女性・回答しないから選択</td></tr>
+      <tr><td>ポジション</td><td>（任意）WS・MB・S・L・OPから選択</td></tr>
+      <tr><td>バレーボールを始めた年月</td><td>（任意）経験年数の自動計算に使います</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/02_register.png') }}"
+           class="screenshot" alt="新規登録画面">
+      <div class="screenshot-placeholder">📱 新規登録画面</div>
+      <figcaption>▲ 新規登録画面</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-block" id="step2">
+    <span class="step-num">STEP 2 ── 3か月目標を立てる（初回のみ）</span>
+    <h3>AIコーチと一緒に目標を立てる（推奨）</h3>
+    <p>ログイン後のホーム画面で <strong>「AI目標設定をする」ボタン</strong> を押してください。AIコーチが会話形式で目標づくりをサポートします。</p>
+
+    <p><strong>① 最初のフォームに入力して送信する</strong></p>
+    <table class="m-table">
+      <tr><th>入力項目</th><th>入力例</th></tr>
+      <tr><td>3か月先のざっくりした目標</td><td>「試合でスパイクを安定して決めたい」</td></tr>
+      <tr><td>今の状態・課題感</td><td>「タイミングが合わずアウトになることが多い」</td></tr>
+      <tr><td>3か月後の目安日</td><td>2026年9月17日</td></tr>
+      <tr><td>週に練習できる日数</td><td>週3日</td></tr>
+      <tr><td>特に強化したい要素</td><td>スパイク（チェックボックスを選ぶ）</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/04_goal_form.png') }}"
+           class="screenshot" alt="AI目標設定フォーム">
+      <div class="screenshot-placeholder">📱 AI目標設定フォーム</div>
+      <figcaption>▲ AI目標設定の入力フォーム</figcaption>
+    </figure>
+
+    <p><strong>② AIコーチと会話する</strong></p>
+    <ol>
+      <li>AIコーチからメッセージが届く（例：「どんなトスの種類で特にズレますか？」）</li>
+      <li>テキスト欄に返答を入力して <strong>「送信」ボタン</strong> を押す（2〜3回繰り返す）</li>
+      <li>AIが3か月分の目標と計画を提案してきたら <strong>「この内容で確定する」ボタン</strong> を押す</li>
+    </ol>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/05_goal_chat.png') }}"
+           class="screenshot" alt="AIコーチとの会話画面">
+      <div class="screenshot-placeholder">📱 AIコーチとの会話画面</div>
+      <figcaption>▲ AIコーチとの対話。緑のメッセージがAIコーチ、青が選手</figcaption>
+    </figure>
+
+    <div class="callout callout-info">
+      <div class="callout-head">AIコーチとの会話のコツ</div>
+      短い言葉でも大丈夫です。「よくわからない」「どれも苦手」と正直に入力してもOKです。内容を修正したいときは確定前に「〇〇を変えたい」と伝えれば対応してくれます。
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-block" id="step3">
+    <span class="step-num">STEP 3 ── スパイク自己診断（初回のみ）</span>
+    <h3>10項目でスパイクを自己評価する</h3>
+    <p>目標設定が終わると、自動的に<strong>課題分析</strong>の画面に案内されます。スパイクの10項目にそれぞれ1〜5点をつけてください。</p>
+
+    <table class="m-table">
+      <tr><th>点数</th><th>目安</th></tr>
+      <tr><td>1点</td><td>とても苦手・よくできない</td></tr>
+      <tr><td>2点</td><td>やや苦手</td></tr>
+      <tr><td>3点</td><td>まあまあ</td></tr>
+      <tr><td>4点</td><td>やや得意</td></tr>
+      <tr><td>5点</td><td>得意・安定している</td></tr>
+    </table>
+
+    <p><strong>評価する10項目：</strong></p>
+    <p style="font-size:13px;line-height:1.8;">
+      助走（スパイクへの走り込み）　／　踏切（ジャンプ前の足の踏み切り）　／　ジャンプ（跳び上がりの高さ・タイミング）　／　空中姿勢（空中でのからだの形）　／　ミート（ボールへの当て方）　／　打点（ボールを打つ位置の高さ）　／　コース打ち分け（狙い通りに打てるか）　／　ブロック対応（相手のブロックをかわす）　／　トスとのタイミング　／　メンタル（緊張・焦りのコントロール）
+    </p>
+    <p>また、よく起こる<strong>失敗パターン</strong>（ネットにかかる・アウトになる・タイミングが合わないなど）にもチェックを入れます。入力後に <strong>「課題を分析する」ボタン</strong> を押してください。</p>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/06_assessment.png') }}"
+           class="screenshot" alt="スパイク自己診断画面">
+      <div class="screenshot-placeholder">📱 スパイク自己診断（10項目の評価）</div>
+      <figcaption>▲ スパイクの10項目を1〜5点で評価する画面</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-block" id="step4">
+    <span class="step-num">STEP 4 ── 深掘り質問（自動案内されます）</span>
+    <h3>課題を絞り込むための質問に答える</h3>
+    <p>課題分析の後、アプリが「一番直すべき課題」を自動判定し、さらに詳しい質問を表示します。すべて選択したら <strong>「深掘りしてテーマを作る」ボタン</strong> を押してください。</p>
+
+    <p><strong>質問の例（タイミングが課題の場合）：</strong></p>
+    <table class="m-table">
+      <tr><th>質問</th><th>選択肢</th></tr>
+      <tr><td>助走の入りが早い・遅いと感じるか</td><td>早い／遅い／特に感じない</td></tr>
+      <tr><td>踏切位置が近くなりやすいか</td><td>はい／いいえ</td></tr>
+      <tr><td>トスの種類によって崩れやすいか</td><td>はい／いいえ</td></tr>
+      <tr><td>練習ではできるが試合で崩れるか</td><td>はい／いいえ</td></tr>
+      <tr><td>力みを感じるか</td><td>はい／いいえ</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/07_deepdive.png') }}"
+           class="screenshot" alt="深掘り質問画面">
+      <div class="screenshot-placeholder">📱 深掘り質問画面</div>
+      <figcaption>▲ 課題を絞り込むための詳細質問</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-block" id="step5">
+    <span class="step-num">STEP 5 ── 練習テーマを確認する</span>
+    <h3>今日の練習テーマが自動生成される</h3>
+    <p>深掘りが完了すると、今日の練習テーマが自動的に作られます。</p>
+
+    <table class="m-table">
+      <tr><th>表示項目</th><th>内容</th></tr>
+      <tr><td>テーマタイトル</td><td>今日意識すべきことの一言まとめ（例：「踏切位置の安定化」）</td></tr>
+      <tr><td>テーマの説明</td><td>何をどう練習するかの具体的な説明（3〜5文）</td></tr>
+      <tr><td>セルフチェック</td><td>選手が自分で確認できるポイント</td></tr>
+      <tr><td><strong>コーチに見てもらうポイント</strong></td><td>コーチが観察すべきヒント（指導参考情報）</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/08_theme.png') }}"
+           class="screenshot" alt="練習テーマ画面">
+      <div class="screenshot-placeholder">📱 今日の練習テーマ表示画面</div>
+      <figcaption>▲ 自動生成された今日の練習テーマ</figcaption>
+    </figure>
+
+    <div class="callout callout-tip">
+      <div class="callout-head">コーチの方へ</div>
+      「コーチに見てもらうポイント」は選手の自己診断をもとに自動生成される観察ヒントです。選手がこの画面をコーチに見せることで、指導の糸口として活用できます。
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-block" id="step6">
+    <span class="step-num">STEP 6 ── ホーム画面を毎日確認する</span>
+    <h3>2回目以降はホーム画面からスタート</h3>
+    <p>ログイン後のホーム画面（ダッシュボード）には、現在の状況がまとめて表示されます。</p>
+
+    <table class="m-table">
+      <tr><th>表示内容</th><th>説明</th></tr>
+      <tr><td>現在の目標</td><td>設定した3か月目標のタイトルと詳細</td></tr>
+      <tr><td>〇か月目のマイルストーン</td><td>今月の中間目標・OK基準・日々の意識項目</td></tr>
+      <tr><td>今取り組むテーマ</td><td>現在の練習テーマとそのテーマが何日目かを表示</td></tr>
+      <tr><td>前回の振り返り</td><td>最後に書いた振り返りの要約（できたこと・次回の意識）</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/03_home.png') }}"
+           class="screenshot" alt="ホーム画面">
+      <div class="screenshot-placeholder">📱 ホーム画面（ダッシュボード）</div>
+      <figcaption>▲ ホーム画面。毎日の練習前にここを確認します</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-block" id="step7">
+    <span class="step-num">STEP 7 ── 振り返りを書く（毎日）</span>
+    <h3>練習後に振り返りを記録する</h3>
+    <ol>
+      <li>ホーム画面の <strong>「振り返りを書く」ボタン</strong> を押す</li>
+      <li>下の表の内容を入力する</li>
+      <li><strong>「振り返りを保存する」ボタン</strong> を押す</li>
+    </ol>
+
+    <table class="m-table">
+      <tr><th>入力項目</th><th>入力するもの</th></tr>
+      <tr><td>今日のテーマを意識できたか</td><td>「はい」「一部」「いいえ」から選ぶ</td></tr>
+      <tr><td>できたこと <span style="color:#b91c1c">必須</span></td><td>うまくいったこと、進歩を感じたこと</td></tr>
+      <tr><td>できなかったこと <span style="color:#b91c1c">必須</span></td><td>うまくいかなかったこと、難しかったこと</td></tr>
+      <tr><td>原因の仮説</td><td>なぜできなかったか（任意）</td></tr>
+      <tr><td>次回意識すること <span style="color:#b91c1c">必須</span></td><td>次の練習で気をつけること</td></tr>
+      <tr><td>コーチに聞きたいこと</td><td>疑問や相談（任意）</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/09_reflection.png') }}"
+           class="screenshot" alt="振り返り記録画面">
+      <div class="screenshot-placeholder">📱 振り返り記録フォーム</div>
+      <figcaption>▲ 練習後の振り返りを記録する画面</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step-block" id="step8">
+    <span class="step-num">STEP 8 ── 成長ログを見る</span>
+    <h3>過去の記録をすべて確認する</h3>
+    <p>ホーム画面の <strong>「成長ログを見る」ボタン</strong> を押すと、これまでの記録が時系列で表示されます。</p>
+    <ul>
+      <li><strong>目標履歴：</strong>これまで設定した目標の一覧</li>
+      <li><strong>練習記録：</strong>各テーマごとの振り返りの全記録（できたこと・次回意識・コーチへの質問など）</li>
+    </ul>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/10_logs.png') }}"
+           class="screenshot" alt="成長ログ画面">
+      <div class="screenshot-placeholder">📱 成長ログ（練習記録の一覧）</div>
+      <figcaption>▲ 過去の振り返りを時系列で確認できる成長ログ</figcaption>
+    </figure>
+  </div>
+
+  <!-- STEP 9 -->
+  <div class="step-block" id="step9">
+    <span class="step-num">STEP 9 ── マイルストーンを管理する</span>
+    <h3>月ごとの中間目標を確認・切り替える</h3>
+    <p>3か月目標は1か月ごとの「マイルストーン」（中間目標）に分かれています。ホーム画面に現在の月が自動表示されます。</p>
+
+    <table class="m-table">
+      <tr><th>目標開始からの経過日数</th><th>表示されるマイルストーン</th></tr>
+      <tr><td>0〜29日</td><td>1か月目のマイルストーン</td></tr>
+      <tr><td>30〜59日</td><td>2か月目のマイルストーン</td></tr>
+      <tr><td>60日以上</td><td>3か月目のマイルストーン</td></tr>
+    </table>
+
+    <p>手動で月を切り替えたい場合：</p>
+    <ul>
+      <li><strong>「次のマイルストーンに進む」ボタン：</strong>次の月に手動で切り替える</li>
+      <li><strong>「自動判定に戻す」ボタン：</strong>経過日数による自動判定に戻す</li>
+    </ul>
+  </div>
+
+  <!-- STEP 10 -->
+  <div class="step-block" id="step10">
+    <span class="step-num">STEP 10 ── 練習テーマを更新する</span>
+    <h3>テーマが古くなったら作り直す</h3>
+    <p>ホーム画面から以下のどちらかの方法でテーマを更新できます。</p>
+    <ul>
+      <li><strong>「テーマを作り直す」ボタン：</strong>最近の振り返りを反映した新しいテーマを自動生成</li>
+      <li><strong>「テーマを微調整する」ボタン：</strong>テーマのタイトルや内容を手動で編集</li>
+    </ul>
+  </div>
+
+  <!-- STEP 11 -->
+  <div class="step-block" id="step11">
+    <span class="step-num">STEP 11 ── 身体データを記録する</span>
+    <h3>身長・体重・ジャンプ力を定期記録する</h3>
+    <ol>
+      <li>画面右上の <strong>「プロフィール」</strong> を押す</li>
+      <li><strong>「身体データを記録・確認する」ボタン</strong> を押す</li>
+      <li>下の表の項目を入力して <strong>「記録する」ボタン</strong> を押す</li>
+    </ol>
+    <table class="m-table">
+      <tr><th>項目</th><th>単位・説明</th></tr>
+      <tr><td>計測日</td><td>測定した日付</td></tr>
+      <tr><td>身長</td><td>cm単位で入力</td></tr>
+      <tr><td>体重</td><td>kg単位で入力</td></tr>
+      <tr><td>指高</td><td>cm ／ 両足で立ち、片腕を真上に伸ばしたときの指先の高さ</td></tr>
+      <tr><td>最高到達点</td><td>cm ／ 助走なしでジャンプしたときの最高指先の高さ</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/11_physical.png') }}"
+           class="screenshot" alt="身体データ記録画面">
+      <div class="screenshot-placeholder">📱 身体データ記録・一覧画面</div>
+      <figcaption>▲ 身体データを記録・確認する画面</figcaption>
+    </figure>
+  </div>
+
+</section>
+
+<!-- ═══════════════ SECTION 4 ═══════════════ -->
+<section id="s4" class="card m-section">
+  <h2>4. よくある操作（Q&amp;A）</h2>
+
+  <details class="qa-item">
+    <summary>ログインできません</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      メールアドレスとパスワードが正しく入力されているか確認してください。メールアドレスは大文字・小文字が区別されます。パスワードを忘れた場合は、アプリの管理者にお問い合わせください（パスワードリセット機能は現在準備中です）。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>AIコーチが反応しない、またはエラーになる</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      AIコーチはインターネット経由で動作しています。通信状況をご確認ください。AIが使えない場合でも、あらかじめ用意されたテンプレートから目標が自動作成されます。機能は一部制限されますが、そのまま使い続けることができます。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>目標を設定したのに、ホーム画面に表示されない</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      AIコーチとの会話で <strong>「この内容で確定する」ボタンを押すまでは目標が保存されません</strong>。もう一度「AI目標設定をする」から進み、最後まで確定してください。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>課題分析（自己診断）はいつやればよいですか？</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      基本的には最初の1回、目標設定の後に行います。その後は目標に基づいて練習テーマが自動提案されます。「テーマが練習内容と合わなくなった」と感じたときは、「テーマを作り直す」から新しいテーマを作ってください。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>「今日のテーマ」はどのように決まりますか？</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      設定した3か月目標・現在の月のマイルストーン内容・直近3回分の振り返り記録をもとに自動生成されます。AIが使える環境では、振り返りの内容も加味してよりパーソナルなテーマが作られます。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>振り返りを書き忘れた日はどうすればよいですか？</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      翌日以降でも振り返りは書けます（記録の日付は「書いた日」になります）。毎日書くのが理想ですが、気づいたときに書き足すだけでも成長ログとして役立ちます。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>コーチが選手の記録を閲覧する方法はありますか？</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      現在は、選手本人のアカウントでログインした場合のみ自分の記録を閲覧できます。コーチが確認するには、選手がスマホを渡して一緒に見るか、「コーチに聞きたいこと」欄の内容を口頭で共有する形になります（コーチ専用の閲覧機能は現在準備中です）。
+    </div>
+  </details>
+
+  <details class="qa-item">
+    <summary>3か月より短い期間で使いたい場合は？</summary>
+    <div class="qa-answer">
+      <span class="qa-a-label">A.</span>
+      アプリのマイルストーンは「3か月＝3段階」で設計されています。短い期間で使う場合は、1か月ごとのマイルストーンを1週間ごとの意識として読み替えてご活用ください。目標の「期限」欄は任意なので空欄でも問題ありません。
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════════ SECTION 5 ═══════════════ -->
+<section id="s5" class="card m-section">
+  <h2>5. 注意事項・困ったときは</h2>
+
+  <h3>データについて</h3>
+  <ul>
+    <li>入力したデータはインターネット上のサーバー（保管場所）に記録されます</li>
+    <li>スマホのブラウザの一時保存データを消しても、記録したデータは消えません</li>
+    <li>アカウントを削除するとすべてのデータが失われます（削除方法は管理者にお問い合わせください）</li>
+  </ul>
+
+  <h3>AI機能について</h3>
+  <div class="callout callout-warn">
+    <div class="callout-head">個人情報の入力にご注意ください</div>
+    AIコーチの機能は外部サービス（OpenAI）を使っています。入力した内容は外部サービスのサーバーに送信されます。
+    氏名・住所・電話番号など、個人を特定できる情報は入力しないようにしてください。
+    また、AIの回答は必ずしも正確とは限りません。コーチの経験や判断と組み合わせてご活用ください。
+  </div>
+
+  <h3>推奨ブラウザ（インターネット閲覧ソフト）</h3>
+  <table class="m-table">
+    <tr><th>端末</th><th>おすすめのブラウザ</th></tr>
+    <tr><td>iPhone / iPad</td><td>Safari または Chrome</td></tr>
+    <tr><td>Android スマートフォン</td><td>Chrome</td></tr>
+    <tr><td>パソコン（Mac）</td><td>Safari または Chrome</td></tr>
+    <tr><td>パソコン（Windows）</td><td>Chrome または Edge</td></tr>
+  </table>
+  <p style="font-size:12px;color:var(--subtext)">※ Internet Explorer（IE）には対応していません</p>
+
+  <h3>困ったときの連絡先</h3>
+  <p>動作に問題が発生した場合やパスワードを忘れた場合は、アプリの管理者（開発・運用担当者）にご連絡ください。連絡の際は以下を教えていただくとスムーズです。</p>
+  <div class="callout callout-info">
+    <ul>
+      <li>どの画面で問題が起きたか（例：「振り返りを保存しようとしたら…」）</li>
+      <li>何が表示されたか（エラーメッセージなど）</li>
+      <li>使っている端末の種類（iPhone / Android / パソコン）とブラウザの名前</li>
+    </ul>
+  </div>
+
+  <h3>操作のコツ</h3>
+  <ul>
+    <li><strong>振り返りは練習直後がおすすめ：</strong>記憶が新鮮なうちに書くと、より具体的な記録になります</li>
+    <li><strong>テーマは1つに絞る：</strong>欲張らず今日の1点に集中することが上達の近道です</li>
+    <li><strong>スマホにブックマーク（お気に入り）登録：</strong>毎回URLを入力しなくて済みます。iPhoneの場合はSafariの「ホーム画面に追加」が便利です</li>
+  </ul>
+</section>
+
+</div><!-- .stack -->
+
+<p style="text-align:center;color:var(--subtext);font-size:12px;margin-top:20px;">
+  Volley Coach ユーザーズマニュアル ／ バレーボールコーチ・選手向け ／ 2026年6月
+</p>
+
+<a href="#" class="top-btn" title="ページトップへ">↑</a>
+
+{% endblock %}
