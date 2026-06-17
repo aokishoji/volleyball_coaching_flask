@@ -8,7 +8,7 @@
         <p class="sub-link">3か月先の抽象的な目標から始めて、AIコーチと対話しながら具体目標とマイルストーンを作ります。</p>
 
         {% if not display_messages %}
-            <form method="post">
+            <form method="post" data-ai>
                 {{ form.hidden_tag() }}
                 <input type="hidden" name="action" value="start">
                 {{ render_field(form.rough_goal) }}
@@ -72,7 +72,7 @@
 
                 <div style="margin-top: 1.5rem; border-top: 1px solid #ddd; padding-top: 1rem;">
                     <p style="font-size: 0.9rem; color: #666;">修正したい点があればコーチに伝えてください</p>
-                    <form method="post">
+                    <form method="post" data-ai>
                         {{ message_form.hidden_tag() }}
                         <input type="hidden" name="action" value="message">
                         {{ render_field(message_form.message) }}
@@ -80,7 +80,7 @@
                     </form>
                 </div>
             {% else %}
-                <form method="post">
+                <form method="post" data-ai>
                     {{ message_form.hidden_tag() }}
                     <input type="hidden" name="action" value="message">
                     {{ render_field(message_form.message) }}

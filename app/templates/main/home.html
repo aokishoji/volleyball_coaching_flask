@@ -82,14 +82,14 @@
                 <a class="button" href="{{ url_for('reflection.new_reflection') }}">振り返りを書く</a>
                 <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマを微調整する</a>
                 {% if latest_goal %}
-                <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" style="display:inline;">
+                <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" style="display:inline;" data-ai>
                     <button class="button secondary" type="submit">テーマを作り直す</button>
                 </form>
                 {% endif %}
             </div>
         {% elif latest_goal %}
             <p>まだテーマがありません。</p>
-            <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}">
+            <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" data-ai>
                 <button class="button" type="submit">練習テーマを作る</button>
             </form>
         {% else %}

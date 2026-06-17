@@ -11,12 +11,13 @@
         <div class="container">
             <div class="header-row">
                 <a href="{{ url_for('main.home') }}" class="brand">Volley Coach</a>
-                {% if current_user.is_authenticated %}
                 <nav class="header-nav">
-                    <a href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
-                    <a href="{{ url_for('auth.logout') }}">ログアウト</a>
-                </nav>
+                <a href="{{ url_for('main.manual') }}">マニュアル</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile.edit_profile') }}">プロフィール</a>
+                <a href="{{ url_for('auth.logout') }}">ログアウト</a>
                 {% endif %}
+            </nav>
             </div>
         </div>
     </header>
@@ -32,5 +33,23 @@
 
         {% block content %}{% endblock %}
     </main>
+
+<div id="ai-loading-overlay" class="ai-loading-overlay">
+  <div class="ai-loading-box">
+    <div class="ai-spinner"></div>
+    <span>AI検討中...</span>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var overlay = document.getElementById('ai-loading-overlay');
+  document.querySelectorAll('form[data-ai]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      overlay.classList.add('active');
+    });
+  });
+});
+</script>
 </body>
 </html>

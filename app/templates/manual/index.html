@@ -256,9 +256,9 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="flow-arrow">↓</div>
     <div class="flow-step"><span class="num">2</span><span>3か月目標を立てる <span class="flow-note">（初回のみ）</span></span></div>
     <div class="flow-arrow">↓</div>
-    <div class="flow-step"><span class="num">3</span><span>スパイク自己診断 → 深掘り → 練習テーマ生成 <span class="flow-note">（初回のみ）</span></span></div>
+    <div class="flow-step"><span class="num">3</span><span>ホームで「練習テーマを作る」を押す <span class="flow-note">（初回 or テーマを変えたいとき）</span></span></div>
     <div class="flow-arrow">↓</div>
-    <div class="flow-step"><span class="num">4</span><span>【毎日】ホーム画面で今日のテーマを確認する</span></div>
+    <div class="flow-step"><span class="num">4</span><span>【毎日】ホーム画面でテーマを確認して練習する</span></div>
     <div class="flow-arrow">↓</div>
     <div class="flow-step"><span class="num">5</span><span>【毎日】練習後に振り返りを書く</span></div>
     <div class="flow-arrow">↓</div>
@@ -342,88 +342,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   <!-- STEP 3 -->
   <div class="step-block" id="step3">
-    <span class="step-num">STEP 3 ── スパイク自己診断（初回のみ）</span>
-    <h3>10項目でスパイクを自己評価する</h3>
-    <p>目標設定が終わると、自動的に<strong>課題分析</strong>の画面に案内されます。スパイクの10項目にそれぞれ1〜5点をつけてください。</p>
-
-    <table class="m-table">
-      <tr><th>点数</th><th>目安</th></tr>
-      <tr><td>1点</td><td>とても苦手・よくできない</td></tr>
-      <tr><td>2点</td><td>やや苦手</td></tr>
-      <tr><td>3点</td><td>まあまあ</td></tr>
-      <tr><td>4点</td><td>やや得意</td></tr>
-      <tr><td>5点</td><td>得意・安定している</td></tr>
-    </table>
-
-    <p><strong>評価する10項目：</strong></p>
-    <p style="font-size:13px;line-height:1.8;">
-      助走（スパイクへの走り込み）　／　踏切（ジャンプ前の足の踏み切り）　／　ジャンプ（跳び上がりの高さ・タイミング）　／　空中姿勢（空中でのからだの形）　／　ミート（ボールへの当て方）　／　打点（ボールを打つ位置の高さ）　／　コース打ち分け（狙い通りに打てるか）　／　ブロック対応（相手のブロックをかわす）　／　トスとのタイミング　／　メンタル（緊張・焦りのコントロール）
-    </p>
-    <p>また、よく起こる<strong>失敗パターン</strong>（ネットにかかる・アウトになる・タイミングが合わないなど）にもチェックを入れます。入力後に <strong>「課題を分析する」ボタン</strong> を押してください。</p>
-
-    <figure class="screenshot-wrap">
-      <img src="{{ url_for('static', filename='images/manual/06_assessment.png') }}"
-           class="screenshot" alt="スパイク自己診断画面">
-      <div class="screenshot-placeholder">📱 スパイク自己診断（10項目の評価）</div>
-      <figcaption>▲ スパイクの10項目を1〜5点で評価する画面</figcaption>
-    </figure>
-  </div>
-
-  <!-- STEP 4 -->
-  <div class="step-block" id="step4">
-    <span class="step-num">STEP 4 ── 深掘り質問（自動案内されます）</span>
-    <h3>課題を絞り込むための質問に答える</h3>
-    <p>課題分析の後、アプリが「一番直すべき課題」を自動判定し、さらに詳しい質問を表示します。すべて選択したら <strong>「深掘りしてテーマを作る」ボタン</strong> を押してください。</p>
-
-    <p><strong>質問の例（タイミングが課題の場合）：</strong></p>
-    <table class="m-table">
-      <tr><th>質問</th><th>選択肢</th></tr>
-      <tr><td>助走の入りが早い・遅いと感じるか</td><td>早い／遅い／特に感じない</td></tr>
-      <tr><td>踏切位置が近くなりやすいか</td><td>はい／いいえ</td></tr>
-      <tr><td>トスの種類によって崩れやすいか</td><td>はい／いいえ</td></tr>
-      <tr><td>練習ではできるが試合で崩れるか</td><td>はい／いいえ</td></tr>
-      <tr><td>力みを感じるか</td><td>はい／いいえ</td></tr>
-    </table>
-
-    <figure class="screenshot-wrap">
-      <img src="{{ url_for('static', filename='images/manual/07_deepdive.png') }}"
-           class="screenshot" alt="深掘り質問画面">
-      <div class="screenshot-placeholder">📱 深掘り質問画面</div>
-      <figcaption>▲ 課題を絞り込むための詳細質問</figcaption>
-    </figure>
-  </div>
-
-  <!-- STEP 5 -->
-  <div class="step-block" id="step5">
-    <span class="step-num">STEP 5 ── 練習テーマを確認する</span>
-    <h3>今日の練習テーマが自動生成される</h3>
-    <p>深掘りが完了すると、今日の練習テーマが自動的に作られます。</p>
-
-    <table class="m-table">
-      <tr><th>表示項目</th><th>内容</th></tr>
-      <tr><td>テーマタイトル</td><td>今日意識すべきことの一言まとめ（例：「踏切位置の安定化」）</td></tr>
-      <tr><td>テーマの説明</td><td>何をどう練習するかの具体的な説明（3〜5文）</td></tr>
-      <tr><td>セルフチェック</td><td>選手が自分で確認できるポイント</td></tr>
-      <tr><td><strong>コーチに見てもらうポイント</strong></td><td>コーチが観察すべきヒント（指導参考情報）</td></tr>
-    </table>
-
-    <figure class="screenshot-wrap">
-      <img src="{{ url_for('static', filename='images/manual/08_theme.png') }}"
-           class="screenshot" alt="練習テーマ画面">
-      <div class="screenshot-placeholder">📱 今日の練習テーマ表示画面</div>
-      <figcaption>▲ 自動生成された今日の練習テーマ</figcaption>
-    </figure>
-
-    <div class="callout callout-tip">
-      <div class="callout-head">コーチの方へ</div>
-      「コーチに見てもらうポイント」は選手の自己診断をもとに自動生成される観察ヒントです。選手がこの画面をコーチに見せることで、指導の糸口として活用できます。
-    </div>
-  </div>
-
-  <!-- STEP 6 -->
-  <div class="step-block" id="step6">
-    <span class="step-num">STEP 6 ── ホーム画面を毎日確認する</span>
-    <h3>2回目以降はホーム画面からスタート</h3>
+    <span class="step-num">STEP 3 ── ホーム画面で練習テーマを作る</span>
+    <h3>ログイン後はホーム画面からスタート</h3>
     <p>ログイン後のホーム画面（ダッシュボード）には、現在の状況がまとめて表示されます。</p>
 
     <table class="m-table">
@@ -434,17 +354,25 @@ document.addEventListener('DOMContentLoaded', function () {
       <tr><td>前回の振り返り</td><td>最後に書いた振り返りの要約（できたこと・次回の意識）</td></tr>
     </table>
 
+    <h3>「練習テーマを作る」でテーマを生成する</h3>
+    <p>テーマがまだない場合は「今取り組むテーマ」の欄に <strong>「練習テーマを作る」ボタン</strong> が表示されます。ボタンを押すと、設定した目標・現在月のマイルストーン・最近の振り返りをもとにAIが自動でテーマを生成します。</p>
+
+    <div class="callout callout-info">
+      <div class="callout-head">テーマが作られる仕組み</div>
+      AIが「3か月目標」「現在の月の重点項目（マイルストーン）」「最近3回分の振り返り記録」を読み込んでテーマを提案します。AIが使えない場合は、テンプレートから自動で作られます。
+    </div>
+
     <figure class="screenshot-wrap">
       <img src="{{ url_for('static', filename='images/manual/03_home.png') }}"
            class="screenshot" alt="ホーム画面">
       <div class="screenshot-placeholder">📱 ホーム画面（ダッシュボード）</div>
-      <figcaption>▲ ホーム画面。毎日の練習前にここを確認します</figcaption>
+      <figcaption>▲ ホーム画面。テーマが生成されたら毎日の練習前にここを確認します</figcaption>
     </figure>
   </div>
 
-  <!-- STEP 7 -->
-  <div class="step-block" id="step7">
-    <span class="step-num">STEP 7 ── 振り返りを書く（毎日）</span>
+  <!-- STEP 4 -->
+  <div class="step-block" id="step4">
+    <span class="step-num">STEP 4 ── 振り返りを書く（毎日）</span>
     <h3>練習後に振り返りを記録する</h3>
     <ol>
       <li>ホーム画面の <strong>「振り返りを書く」ボタン</strong> を押す</li>
@@ -470,9 +398,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </figure>
   </div>
 
-  <!-- STEP 8 -->
-  <div class="step-block" id="step8">
-    <span class="step-num">STEP 8 ── 成長ログを見る</span>
+  <!-- STEP 5 -->
+  <div class="step-block" id="step5">
+    <span class="step-num">STEP 5 ── 成長ログを見る</span>
     <h3>過去の記録をすべて確認する</h3>
     <p>ホーム画面の <strong>「成長ログを見る」ボタン</strong> を押すと、これまでの記録が時系列で表示されます。</p>
     <ul>
@@ -488,9 +416,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </figure>
   </div>
 
-  <!-- STEP 9 -->
-  <div class="step-block" id="step9">
-    <span class="step-num">STEP 9 ── マイルストーンを管理する</span>
+  <!-- STEP 6 -->
+  <div class="step-block" id="step6">
+    <span class="step-num">STEP 6 ── マイルストーンを管理する</span>
     <h3>月ごとの中間目標を確認・切り替える</h3>
     <p>3か月目標は1か月ごとの「マイルストーン」（中間目標）に分かれています。ホーム画面に現在の月が自動表示されます。</p>
 
@@ -508,9 +436,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </ul>
   </div>
 
-  <!-- STEP 10 -->
-  <div class="step-block" id="step10">
-    <span class="step-num">STEP 10 ── 練習テーマを更新する</span>
+  <!-- STEP 7 -->
+  <div class="step-block" id="step7">
+    <span class="step-num">STEP 7 ── 練習テーマを更新する</span>
     <h3>テーマが古くなったら作り直す</h3>
     <p>ホーム画面から以下のどちらかの方法でテーマを更新できます。</p>
     <ul>
@@ -519,9 +447,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </ul>
   </div>
 
-  <!-- STEP 11 -->
-  <div class="step-block" id="step11">
-    <span class="step-num">STEP 11 ── 身体データを記録する</span>
+  <!-- STEP 8 -->
+  <div class="step-block" id="step8">
+    <span class="step-num">STEP 8 ── 身体データを記録する</span>
     <h3>身長・体重・ジャンプ力を定期記録する</h3>
     <ol>
       <li>画面右上の <strong>「プロフィール」</strong> を押す</li>
@@ -543,6 +471,71 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="screenshot-placeholder">📱 身体データ記録・一覧画面</div>
       <figcaption>▲ 身体データを記録・確認する画面</figcaption>
     </figure>
+  </div>
+
+  <!-- オプション機能 -->
+  <div class="step-block" id="opt-analysis" style="border-left-color:#6b7280;">
+    <span class="step-num" style="background:#6b7280;">オプション機能 ── スパイク自己診断でテーマを詳しく作る</span>
+
+    <div class="callout callout-info">
+      <div class="callout-head">この機能はホーム画面からはリンクされていません</div>
+      スパイクの課題を10項目で自己評価し、深掘り質問を通じて練習テーマを作る詳細分析機能です。現在はホーム画面に案内ボタンがありませんが、下記URLを直接入力してアクセスできます。
+      <br><strong>URL：</strong><code>https://coach.aokishoji.com/analysis/</code>
+    </div>
+
+    <h3>① スパイク自己診断（10項目評価）</h3>
+    <p>スパイクの10項目にそれぞれ1〜5点をつけます。よく起こる失敗パターンにもチェックを入れ、<strong>「課題を分析する」ボタン</strong>を押してください。</p>
+
+    <table class="m-table">
+      <tr><th>点数</th><th>目安</th></tr>
+      <tr><td>1点</td><td>とても苦手・よくできない</td></tr>
+      <tr><td>2点</td><td>やや苦手</td></tr>
+      <tr><td>3点</td><td>まあまあ</td></tr>
+      <tr><td>4点</td><td>やや得意</td></tr>
+      <tr><td>5点</td><td>得意・安定している</td></tr>
+    </table>
+
+    <p><strong>評価する10項目：</strong>助走 ／ 踏切 ／ ジャンプ ／ 空中姿勢 ／ ミート ／ 打点 ／ コース打ち分け ／ ブロック対応 ／ トスとのタイミング ／ メンタル</p>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/06_assessment.png') }}"
+           class="screenshot" alt="スパイク自己診断画面">
+      <div class="screenshot-placeholder">📱 スパイク自己診断（10項目の評価）</div>
+      <figcaption>▲ スパイクの10項目を1〜5点で評価する画面</figcaption>
+    </figure>
+
+    <h3>② 深掘り質問（自動案内されます）</h3>
+    <p>課題分析の後、アプリが「一番直すべき課題」を自動判定し、詳しい質問を表示します。すべて選択したら <strong>「深掘りしてテーマを作る」ボタン</strong> を押してください。</p>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/07_deepdive.png') }}"
+           class="screenshot" alt="深掘り質問画面">
+      <div class="screenshot-placeholder">📱 深掘り質問画面</div>
+      <figcaption>▲ 課題を絞り込むための詳細質問</figcaption>
+    </figure>
+
+    <h3>③ 練習テーマの確認</h3>
+    <p>深掘りが完了すると、課題に特化した練習テーマが表示されます。「コーチに見てもらうポイント」も含まれるため、選手がコーチに画面を見せる際の参考情報として使えます。</p>
+
+    <table class="m-table">
+      <tr><th>表示項目</th><th>内容</th></tr>
+      <tr><td>テーマタイトル</td><td>今日意識すべきことの一言まとめ</td></tr>
+      <tr><td>テーマの説明</td><td>何をどう練習するかの具体的な説明（3〜5文）</td></tr>
+      <tr><td>セルフチェック</td><td>選手が自分で確認できるポイント</td></tr>
+      <tr><td><strong>コーチに見てもらうポイント</strong></td><td>コーチが観察すべきヒント（指導参考情報）</td></tr>
+    </table>
+
+    <figure class="screenshot-wrap">
+      <img src="{{ url_for('static', filename='images/manual/08_theme.png') }}"
+           class="screenshot" alt="練習テーマ画面">
+      <div class="screenshot-placeholder">📱 今日の練習テーマ表示画面（詳細版）</div>
+      <figcaption>▲ 自動生成された練習テーマ（詳細分析版）</figcaption>
+    </figure>
+
+    <div class="callout callout-tip">
+      <div class="callout-head">コーチの方へ</div>
+      「コーチに見てもらうポイント」は選手の自己診断をもとに自動生成される観察ヒントです。選手がこの画面をコーチに見せることで、指導の糸口として活用できます。
+    </div>
   </div>
 
 </section>
@@ -576,10 +569,10 @@ document.addEventListener('DOMContentLoaded', function () {
   </details>
 
   <details class="qa-item">
-    <summary>課題分析（自己診断）はいつやればよいですか？</summary>
+    <summary>スパイク自己診断（詳細分析）はいつやればよいですか？</summary>
     <div class="qa-answer">
       <span class="qa-a-label">A.</span>
-      基本的には最初の1回、目標設定の後に行います。その後は目標に基づいて練習テーマが自動提案されます。「テーマが練習内容と合わなくなった」と感じたときは、「テーマを作り直す」から新しいテーマを作ってください。
+      これはオプション機能です。通常はホーム画面の「練習テーマを作る」ボタンで十分なテーマが作られます。「もっと細かく課題を分析したい」と感じたときに <code>/analysis/</code> へ直接アクセスして使ってください。「テーマが練習内容と合わなくなった」と感じたときは、ホーム画面の「テーマを作り直す」ボタンからも新しいテーマを作れます。
     </div>
   </details>
 

@@ -68,6 +68,8 @@ def roadmap():
             detail = build_saved_goal_detail(result)
             target_date = date.fromisoformat(target_date_text) if target_date_text else None
 
+            Goal.query.filter_by(user_id=current_user.id, status="active").update({"status": "archived"})
+
             goal = Goal(
                 user_id=current_user.id,
                 skill_type="three_month_ai",
