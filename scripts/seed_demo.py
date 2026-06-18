@@ -8,7 +8,7 @@ sys.path.insert(0, r"c:\Users\shoji\Documents\GitHub\volleyball_coaching_flask")
 from app import create_app
 from app.extensions import db
 from app.models import (
-    User, Profile, Goal, GoalMilestone,
+    User, Profile, Goal, GoalMilestone, GoalCoachSession,
     Assessment, DeepDiveAnswer, PracticeTheme,
     DailyPracticeTheme, Reflection, PhysicalRecord,
 )
@@ -24,6 +24,19 @@ with app.app_context():
     existing = User.query.filter_by(email=EMAIL).first()
     if existing:
         print("Deleting existing demo user...")
+        uid = existing.id
+        Reflection.query.filter_by(user_id=uid).delete()
+        DailyPracticeTheme.query.filter_by(user_id=uid).delete()
+        PracticeTheme.query.filter_by(user_id=uid).delete()
+        for a in Assessment.query.filter_by(user_id=uid).all():
+            DeepDiveAnswer.query.filter_by(assessment_id=a.id).delete()
+        Assessment.query.filter_by(user_id=uid).delete()
+        for g in Goal.query.filter_by(user_id=uid).all():
+            GoalMilestone.query.filter_by(goal_id=g.id).delete()
+        Goal.query.filter_by(user_id=uid).delete()
+        PhysicalRecord.query.filter_by(user_id=uid).delete()
+        Profile.query.filter_by(user_id=uid).delete()
+        GoalCoachSession.query.filter_by(user_id=uid).delete()
         db.session.delete(existing)
         db.session.commit()
 

@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="flow-arrow">↓</div>
     <div class="flow-step"><span class="num">6</span><span>1か月ごとにマイルストーン（中間目標）を確認・更新する</span></div>
     <div class="flow-arrow">↓</div>
-    <div class="flow-step"><span class="num">7</span><span>3か月後：成長ログで振り返る</span></div>
+    <div class="flow-step"><span class="num">7</span><span>3か月後：成長記録で振り返る</span></div>
   </div>
 
   <!-- STEP 1 -->
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function () {
   <div class="step-block" id="step2">
     <span class="step-num">STEP 2 ── 3か月目標を立てる（初回のみ）</span>
     <h3>AIコーチと一緒に目標を立てる（推奨）</h3>
-    <p>ログイン後のホーム画面で <strong>「AI目標設定をする」ボタン</strong> を押してください。AIコーチが会話形式で目標づくりをサポートします。</p>
+    <p>ログイン後のホーム画面で <strong>「AI目標作成」ボタン</strong> を押してください。AIコーチが会話形式で目標づくりをサポートします。</p>
 
     <p><strong>① 最初のフォームに入力して送信する</strong></p>
     <table class="m-table">
@@ -315,9 +315,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <figure class="screenshot-wrap">
       <img src="{{ url_for('static', filename='images/manual/04_goal_form.png') }}"
-           class="screenshot" alt="AI目標設定フォーム">
-      <div class="screenshot-placeholder">📱 AI目標設定フォーム</div>
-      <figcaption>▲ AI目標設定の入力フォーム</figcaption>
+           class="screenshot" alt="AI目標作成フォーム">
+      <div class="screenshot-placeholder">📱 AI目標作成フォーム</div>
+      <figcaption>▲ AI目標作成の入力フォーム</figcaption>
     </figure>
 
     <p><strong>② AIコーチと会話する</strong></p>
@@ -344,15 +344,15 @@ document.addEventListener('DOMContentLoaded', function () {
   <div class="step-block" id="step3">
     <span class="step-num">STEP 3 ── ホーム画面で練習テーマを作る</span>
     <h3>ログイン後はホーム画面からスタート</h3>
-    <p>ログイン後のホーム画面（ダッシュボード）には、現在の状況がまとめて表示されます。</p>
+    <p>ログイン後のホーム画面には、<strong>目標→マイルストーン→テーマ</strong>が階層的に表示されます。3つのつながりが一目でわかるレイアウトです。</p>
 
     <table class="m-table">
-      <tr><th>表示内容</th><th>説明</th></tr>
-      <tr><td>現在の目標</td><td>設定した3か月目標のタイトルと詳細</td></tr>
-      <tr><td>〇か月目のマイルストーン</td><td>今月の中間目標・OK基準・日々の意識項目</td></tr>
-      <tr><td>今取り組むテーマ</td><td>現在の練習テーマとそのテーマが何日目かを表示</td></tr>
-      <tr><td>前回の振り返り</td><td>最後に書いた振り返りの要約（できたこと・次回の意識）</td></tr>
+      <tr><th>表示エリア</th><th>色</th><th>説明</th></tr>
+      <tr><td>🎯 3か月目標</td><td style="color:#2563eb;">青</td><td>設定した目標のタイトルと期限</td></tr>
+      <tr><td>📍 〇か月目のマイルストーン</td><td style="color:#16a34a;">緑</td><td>今月の中間目標・OK基準・日々の意識項目</td></tr>
+      <tr><td>🏋️ 今日の練習テーマ</td><td style="color:#b45309;">茶</td><td>現在の練習テーマとそのテーマが何日目かを表示</td></tr>
     </table>
+    <p>その下に「前回の振り返り」カードがあり、最後に書いた振り返りの要約が表示されます。</p>
 
     <h3>「練習テーマを作る」でテーマを生成する</h3>
     <p>テーマがまだない場合は「今取り組むテーマ」の欄に <strong>「練習テーマを作る」ボタン</strong> が表示されます。ボタンを押すと、設定した目標・現在月のマイルストーン・最近の振り返りをもとにAIが自動でテーマを生成します。</p>
@@ -400,9 +400,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   <!-- STEP 5 -->
   <div class="step-block" id="step5">
-    <span class="step-num">STEP 5 ── 成長ログを見る</span>
+    <span class="step-num">STEP 5 ── 成長記録を見る</span>
     <h3>過去の記録をすべて確認する</h3>
-    <p>ホーム画面の <strong>「成長ログを見る」ボタン</strong> を押すと、これまでの記録が時系列で表示されます。</p>
+    <p>ホーム画面の <strong>「記録の確認」ボタン</strong> を押すと、これまでの記録が時系列で表示されます。</p>
     <ul>
       <li><strong>目標履歴：</strong>これまで設定した目標の一覧</li>
       <li><strong>練習記録：</strong>各テーマごとの振り返りの全記録（できたこと・次回意識・コーチへの質問など）</li>
@@ -411,8 +411,8 @@ document.addEventListener('DOMContentLoaded', function () {
     <figure class="screenshot-wrap">
       <img src="{{ url_for('static', filename='images/manual/10_logs.png') }}"
            class="screenshot" alt="成長ログ画面">
-      <div class="screenshot-placeholder">📱 成長ログ（練習記録の一覧）</div>
-      <figcaption>▲ 過去の振り返りを時系列で確認できる成長ログ</figcaption>
+      <div class="screenshot-placeholder">📱 成長記録（練習記録の一覧）</div>
+      <figcaption>▲ 過去の振り返りを時系列で確認できる成長記録</figcaption>
     </figure>
   </div>
 
@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <p>手動で月を切り替えたい場合：</p>
     <ul>
       <li><strong>「次のマイルストーンに進む」ボタン：</strong>次の月に手動で切り替える</li>
-      <li><strong>「自動判定に戻す」ボタン：</strong>経過日数による自動判定に戻す</li>
+      <li><strong>「前のマイルストーンに戻す」ボタン：</strong>経過日数による自動判定に戻す</li>
     </ul>
   </div>
 
@@ -442,8 +442,8 @@ document.addEventListener('DOMContentLoaded', function () {
     <h3>テーマが古くなったら作り直す</h3>
     <p>ホーム画面から以下のどちらかの方法でテーマを更新できます。</p>
     <ul>
-      <li><strong>「テーマを作り直す」ボタン：</strong>最近の振り返りを反映した新しいテーマを自動生成</li>
-      <li><strong>「テーマを微調整する」ボタン：</strong>テーマのタイトルや内容を手動で編集</li>
+      <li><strong>「次のテーマ作成」ボタン：</strong>最近の振り返りを反映した新しいテーマを自動生成</li>
+      <li><strong>「テーマの修正」ボタン：</strong>テーマのタイトルや内容を手動で編集</li>
     </ul>
   </div>
 
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <summary>目標を設定したのに、ホーム画面に表示されない</summary>
     <div class="qa-answer">
       <span class="qa-a-label">A.</span>
-      AIコーチとの会話で <strong>「この内容で確定する」ボタンを押すまでは目標が保存されません</strong>。もう一度「AI目標設定をする」から進み、最後まで確定してください。
+      AIコーチとの会話で <strong>「この内容で確定する」ボタンを押すまでは目標が保存されません</strong>。もう一度「AI目標作成」から進み、最後まで確定してください。
     </div>
   </details>
 
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <summary>スパイク自己診断（詳細分析）はいつやればよいですか？</summary>
     <div class="qa-answer">
       <span class="qa-a-label">A.</span>
-      これはオプション機能です。通常はホーム画面の「練習テーマを作る」ボタンで十分なテーマが作られます。「もっと細かく課題を分析したい」と感じたときに <code>/analysis/</code> へ直接アクセスして使ってください。「テーマが練習内容と合わなくなった」と感じたときは、ホーム画面の「テーマを作り直す」ボタンからも新しいテーマを作れます。
+      これはオプション機能です。通常はホーム画面の「練習テーマを作る」ボタンで十分なテーマが作られます。「もっと細かく課題を分析したい」と感じたときに <code>/analysis/</code> へ直接アクセスして使ってください。「テーマが練習内容と合わなくなった」と感じたときは、ホーム画面の「次のテーマ作成」ボタンからも新しいテーマを作れます。
     </div>
   </details>
 
@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function () {
     <summary>振り返りを書き忘れた日はどうすればよいですか？</summary>
     <div class="qa-answer">
       <span class="qa-a-label">A.</span>
-      翌日以降でも振り返りは書けます（記録の日付は「書いた日」になります）。毎日書くのが理想ですが、気づいたときに書き足すだけでも成長ログとして役立ちます。
+      翌日以降でも振り返りは書けます（記録の日付は「書いた日」になります）。毎日書くのが理想ですが、気づいたときに書き足すだけでも成長記録として役立ちます。
     </div>
   </details>
 
