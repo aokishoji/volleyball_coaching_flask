@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% from "_form_helpers.html" import render_field %}
-{% block title %}AI目標設定{% endblock %}
+{% block title %}AI目標作成{% endblock %}
 {% block content %}
 <div class="stack">
-    <section class="card">
-        <h1>AI目標設定</h1>
-        <p class="sub-link">3か月先の抽象的な目標から始めて、AIコーチと対話しながら具体目標とマイルストーンを作ります。</p>
+    <section class="card" style="border-left:4px solid #2563eb;">
+        <p style="font-size:0.7rem; font-weight:700; color:#2563eb; letter-spacing:0.05em; margin-bottom:2px;">🎯 AI目標作成</p>
+        <h1 style="margin-top:0;">AI目標作成</h1>
+        <p style="font-size:0.85rem; color:var(--subtext);">3か月先の目標から始めて、AIコーチと対話しながら具体目標とマイルストーンを作ります。</p>
 
         {% if not display_messages %}
             <form method="post" data-ai>
@@ -29,23 +30,23 @@
             </div>
 
             {% if result and result.status == "ready" %}
-                <div class="sub-card">
-                    <h2>目標案</h2>
-                    <p><strong>{{ result.goal_title }}</strong></p>
+                <div class="sub-card" style="border-left:3px solid #16a34a;">
+                    <p style="font-size:0.7rem; font-weight:700; color:#16a34a; letter-spacing:0.05em; margin-bottom:4px;">📍 目標案</p>
+                    <p style="font-size:0.95rem; font-weight:700;">{{ result.goal_title }}</p>
                     {% if result.goal_detail %}
-                        <p class="preline">{{ result.goal_detail }}</p>
+                        <p class="preline" style="font-size:0.85rem; color:var(--subtext);">{{ result.goal_detail }}</p>
                     {% endif %}
 
                     {% if result.milestones %}
-                        <h3>3か月マイルストーン</h3>
+                        <p style="font-size:0.7rem; font-weight:700; color:#16a34a; letter-spacing:0.05em; margin:1rem 0 4px;">📍 3か月マイルストーン</p>
                         {% for ms in result.milestones %}
-                            <div class="milestone-item">
-                                <p><strong>{{ ms.month }}か月目：{{ ms.title }}</strong></p>
+                            <div style="border-left:2px solid #bbf7d0; padding-left:0.75rem; margin-bottom:0.5rem;">
+                                <p style="font-size:0.9rem; font-weight:700; margin:0;">{{ ms.month }}か月目：{{ ms.title }}</p>
                                 {% if ms.ok_criteria %}
-                                    <p>OK基準：{{ ms.ok_criteria }}</p>
+                                    <p style="font-size:0.8rem; color:var(--subtext); margin:2px 0 0;">OK基準：{{ ms.ok_criteria }}</p>
                                 {% endif %}
                                 {% if ms.practice_focus %}
-                                    <ul>
+                                    <ul style="font-size:0.8rem; margin:4px 0 0; padding-left:18px;">
                                         {% for focus in ms.practice_focus %}
                                             <li>{{ focus }}</li>
                                         {% endfor %}
@@ -56,8 +57,8 @@
                     {% endif %}
 
                     {% if result.practice_focus %}
-                        <h3>日々の練習で意識すること</h3>
-                        <ul>
+                        <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin:1rem 0 4px;">🏋️ 日々の練習で意識すること</p>
+                        <ul style="font-size:0.85rem; margin:0; padding-left:18px;">
                             {% for focus in result.practice_focus %}
                                 <li>{{ focus }}</li>
                             {% endfor %}
@@ -94,6 +95,7 @@
             </form>
         {% endif %}
     </section>
+    <a class="button secondary" href="{{ url_for('main.home') }}">← ホームに戻る</a>
 </div>
 <script>
     var chat = document.getElementById("coach-chat");
