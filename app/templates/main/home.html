@@ -43,7 +43,7 @@
       <div class="button-list" style="margin-top:10px;">
         {% if current_month < 3 %}
         <form method="post" action="{{ url_for('goals.advance_milestone', goal_id=latest_goal.id) }}">
-          <button class="button secondary" type="submit">次のマイルストーンに進む →</button>
+          <button class="button secondary" type="submit">次のマイルストーンに進む</button>
         </form>
         {% endif %}
         {% if latest_goal.current_month_override is not none %}
@@ -70,8 +70,8 @@
         {% if latest_daily_theme.check_point %}
           <p style="font-size:0.8rem; margin-top:8px;"><strong>振り返りポイント:</strong> {{ latest_daily_theme.check_point }}</p>
         {% endif %}
-        <div class="button-list" style="margin-top:10px;">
-          <a class="button" href="{{ url_for('reflection.new_reflection') }}">振り返りを書く</a>
+        <a class="button" href="{{ url_for('reflection.new_reflection') }}" style="display:block; text-align:center; margin-top:10px;">振り返りを書く</a>
+        <div class="button-list" style="margin-top:8px;">
           <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマの修正</a>
           <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" data-ai>
             <button class="button secondary" type="submit">次のテーマ作成</button>
