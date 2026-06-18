@@ -1,26 +1,24 @@
 {% extends "base.html" %}
-{% block title %}成長ログ{% endblock %}
+{% block title %}成長記録{% endblock %}
 {% block content %}
-<h1>成長ログ</h1>
+<h1>成長記録</h1>
 
 <div class="stack">
     <section class="card">
         <h2>目標履歴</h2>
         {% if goals %}
             {% for goal in goals %}
-                <div class="list-item">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
-                        <strong>{{ goal.goal_title }}</strong>
-                        {% if goal.status == "active" %}
-                            <span style="font-size:0.7rem; background:#dbeafe; color:#1d4ed8; border-radius:999px; padding:1px 8px;">現在の目標</span>
-                        {% else %}
-                            <span style="font-size:0.7rem; background:#f3f4f6; color:#6b7280; border-radius:999px; padding:1px 8px;">過去の目標</span>
-                        {% endif %}
-                    </div>
+                <div class="list-item" style="border-left:3px solid {% if goal.status == 'active' %}#2563eb{% else %}#d1d5db{% endif %}; padding-left:0.75rem;">
+                    {% if goal.status == "active" %}
+                        <span style="font-size:0.7rem; font-weight:700; color:#2563eb; letter-spacing:0.05em;">🎯 現在の目標</span>
+                    {% else %}
+                        <span style="font-size:0.7rem; font-weight:700; color:#6b7280; letter-spacing:0.05em;">過去の目標</span>
+                    {% endif %}
+                    <p style="font-size:0.95rem; font-weight:700; margin:2px 0 4px;">{{ goal.goal_title }}</p>
                     {% if goal.target_date %}
                         <p style="font-size:0.8rem; color:#888; margin:0 0 0.25rem;">目標期限: {{ goal.target_date.strftime('%Y年%m月%d日') }}</p>
                     {% endif %}
-                    <p class="preline" style="font-size:0.9rem;">{{ goal.goal_detail }}</p>
+                    <p class="preline" style="font-size:0.85rem; color:var(--subtext);">{{ goal.goal_detail }}</p>
                 </div>
             {% endfor %}
         {% else %}
@@ -37,8 +35,8 @@
                 <div class="list-item">
                     <p style="font-size:0.8rem; color:#888;">{{ theme.created_at | jst('%Y-%m-%d') }}</p>
 
-                    <div class="sub-card" style="margin-bottom:0.5rem;">
-                        <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">練習テーマ</p>
+                    <div class="sub-card" style="margin-bottom:0.5rem; border-left:3px solid #b45309;">
+                        <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin:0 0 2px;">🏋️ 練習テーマ</p>
                         <p><strong>{{ theme.theme_title }}</strong></p>
                         <p class="preline" style="font-size:0.9rem;">{{ theme.theme_detail }}</p>
                         {% if theme.check_point %}

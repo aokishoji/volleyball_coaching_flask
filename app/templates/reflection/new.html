@@ -1,27 +1,30 @@
 {% extends "base.html" %}
 {% from "_form_helpers.html" import render_field %}
-{% block title %}振り返り{% endblock %}
+{% block title %}振り返りを書く{% endblock %}
 {% block content %}
-<div class="card">
-    <h1>振り返り</h1>
-    <div class="sub-card">
-        <h2>今回のテーマ</h2>
-        <p><strong>{{ latest_theme.theme_title }}</strong></p>
-        <p class="preline">{{ latest_theme.theme_detail }}</p>
+<div class="stack">
+    <div class="sub-card" style="border-left:4px solid #b45309;">
+        <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin-bottom:2px;">🏋️ 今回のテーマ</p>
+        <p style="font-size:0.95rem; font-weight:700; margin:0 0 6px;">{{ latest_theme.theme_title }}</p>
+        <p class="preline" style="font-size:0.8rem; color:var(--subtext); margin:0;">{{ latest_theme.theme_detail }}</p>
         {% if latest_theme.check_point %}
-            <p><strong>振り返りポイント:</strong> {{ latest_theme.check_point }}</p>
+            <p style="font-size:0.8rem; margin-top:8px;"><strong>振り返りポイント:</strong> {{ latest_theme.check_point }}</p>
         {% endif %}
     </div>
 
-    <form method="post">
-        {{ form.hidden_tag() }}
-        {{ render_field(form.theme_applied) }}
-        {{ render_field(form.good_points) }}
-        {{ render_field(form.bad_points) }}
-        {{ render_field(form.cause_hypothesis) }}
-        {{ render_field(form.next_action) }}
-        {{ render_field(form.coach_question) }}
-        {{ form.submit(class_='button') }}
-    </form>
+    <section class="card">
+        <h1>振り返りを書く</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.theme_applied) }}
+            {{ render_field(form.good_points) }}
+            {{ render_field(form.bad_points) }}
+            {{ render_field(form.cause_hypothesis) }}
+            {{ render_field(form.next_action) }}
+            {{ render_field(form.coach_question) }}
+            {{ form.submit(class_='button') }}
+        </form>
+    </section>
+    <a class="button secondary" href="{{ url_for('main.home') }}">← ホームに戻る</a>
 </div>
 {% endblock %}

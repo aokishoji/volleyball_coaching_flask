@@ -1,23 +1,24 @@
 {% extends "base.html" %}
 {% from "_form_helpers.html" import render_field %}
-{% block title %}目標を編集{% endblock %}
+{% block title %}目標確認・編集{% endblock %}
 {% block content %}
 <div class="stack">
-    <section class="card">
-        <h1>目標を編集</h1>
+    <section class="card" style="border-left:4px solid #2563eb;">
+        <p style="font-size:0.7rem; font-weight:700; color:#2563eb; letter-spacing:0.05em; margin-bottom:2px;">🎯 3か月目標を編集</p>
+        <h1 style="margin-top:0;">目標確認・編集</h1>
         <form method="post">
             {{ form.hidden_tag() }}
             {{ render_field(form.goal_title) }}
             {{ render_field(form.goal_detail) }}
 
-            <h2 style="margin-top:1.5rem;">マイルストーン</h2>
+            <h2 style="margin-top:1.5rem; font-size:0.7rem; font-weight:700; color:#16a34a; letter-spacing:0.05em;">📍 マイルストーン</h2>
 
             {% for idx, prefix, label in [
                 (1, 'm1', '1か月目'),
                 (2, 'm2', '2か月目'),
                 (3, 'm3', '3か月目')
             ] %}
-            <div class="sub-card" style="margin-bottom:1rem;">
+            <div class="sub-card" style="margin-bottom:1rem; border-left:3px solid #16a34a;">
                 <p style="font-weight:bold; margin-bottom:0.5rem;">{{ label }}</p>
                 {{ render_field(form[prefix ~ '_title']) }}
                 {{ render_field(form[prefix ~ '_ok_criteria']) }}

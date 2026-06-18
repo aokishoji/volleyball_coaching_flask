@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% from "_form_helpers.html" import render_field %}
-{% block title %}テーマを編集{% endblock %}
+{% block title %}テーマの修正{% endblock %}
 {% block content %}
-<div class="card">
-    <h1>今取り組むテーマを編集</h1>
-    <form method="post">
-        {{ form.hidden_tag() }}
-        {{ render_field(form.theme_title) }}
-        {{ render_field(form.theme_detail) }}
-        {{ render_field(form.check_point) }}
-        {{ form.submit(class_='button') }}
-    </form>
-    <div style="margin-top:1rem;">
-        <a class="button secondary" href="{{ url_for('main.home') }}">← ホームに戻る</a>
-    </div>
+<div class="stack">
+    <section class="card" style="border-left:4px solid #b45309;">
+        <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin-bottom:2px;">🏋️ 練習テーマの修正</p>
+        <h1 style="margin-top:0;">テーマの修正</h1>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.theme_title) }}
+            {{ render_field(form.theme_detail) }}
+            {{ render_field(form.check_point) }}
+            {{ form.submit(class_='button') }}
+        </form>
+    </section>
+    <a class="button secondary" href="{{ url_for('main.home') }}">← ホームに戻る</a>
 </div>
 {% endblock %}
