@@ -18,8 +18,8 @@
         <p class="layer-sub">目標期限: {{ latest_goal.target_date.strftime('%Y年%m月%d日') }}</p>
       {% endif %}
       <div class="button-list" style="margin-top:10px;">
-        <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
-        <a class="button secondary" href="{{ url_for('goals.edit_goal', goal_id=latest_goal.id) }}">目標を編集する</a>
+        <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標作成</a>
+        <a class="button secondary" href="{{ url_for('goals.edit_goal', goal_id=latest_goal.id) }}">目標確認・編集</a>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
         {% endif %}
         {% if latest_goal.current_month_override is not none %}
         <form method="post" action="{{ url_for('goals.reset_milestone', goal_id=latest_goal.id) }}">
-          <button class="button secondary" type="submit">自動判定に戻す</button>
+          <button class="button secondary" type="submit">前のマイルストーンに戻す</button>
         </form>
         {% endif %}
       </div>
@@ -72,9 +72,9 @@
         {% endif %}
         <div class="button-list" style="margin-top:10px;">
           <a class="button" href="{{ url_for('reflection.new_reflection') }}">振り返りを書く</a>
-          <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマを微調整する</a>
-          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" style="display:inline;" data-ai>
-            <button class="button secondary" type="submit">テーマを作り直す</button>
+          <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマの修正</a>
+          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" data-ai>
+            <button class="button secondary" type="submit">次のテーマ作成</button>
           </form>
         </div>
       {% else %}
@@ -96,7 +96,7 @@
     <h2>現在の目標</h2>
     <p>まだ目標がありません。</p>
     <div class="button-list">
-      <a class="button" href="{{ url_for('goals.roadmap') }}">AI目標設定をする</a>
+      <a class="button" href="{{ url_for('goals.roadmap') }}">AI目標作成</a>
     </div>
   </section>
 
@@ -107,7 +107,7 @@
     <h2>前回の振り返り</h2>
     <p><strong>できたこと:</strong> {{ latest_reflection.good_points }}</p>
     <p><strong>次回意識:</strong> {{ latest_reflection.next_action }}</p>
-    <a class="button secondary" href="{{ url_for('reflection.logs') }}">成長ログを見る</a>
+    <a class="button secondary" href="{{ url_for('reflection.logs') }}">記録の確認</a>
   </section>
   {% endif %}
 

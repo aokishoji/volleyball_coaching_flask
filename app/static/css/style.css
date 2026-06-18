@@ -110,6 +110,15 @@ a:hover { text-decoration: underline; }
   margin: 0;
 }
 
+.goal-hierarchy .button-list {
+  grid-template-columns: 1fr 1fr;
+}
+.goal-hierarchy .button-list .button {
+  font-size: 0.8rem;
+  padding: 8px 4px;
+  text-align: center;
+}
+
 /* AI loading overlay */
 @keyframes ai-spin { to { transform: rotate(360deg); } }
 .ai-loading-overlay {
