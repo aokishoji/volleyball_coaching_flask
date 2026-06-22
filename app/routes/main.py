@@ -37,6 +37,13 @@ def home():
         days = None
         if daily_theme:
             days = (datetime.utcnow().date() - daily_theme.created_at.date()).days + 1
+        latest_reflection = (
+            Reflection.query
+            .join(DailyPracticeTheme, Reflection.daily_theme_id == DailyPracticeTheme.id)
+            .filter(DailyPracticeTheme.goal_id == goal.id)
+            .order_by(Reflection.created_at.desc())
+            .first()
+        )
         goal_contexts.append({
             "goal": goal,
             "current_month": cm,
@@ -44,18 +51,11 @@ def home():
             "current_practice_focus": focus,
             "latest_daily_theme": daily_theme,
             "days_on_theme": days,
+            "latest_reflection": latest_reflection,
         })
-
-    latest_reflection = (
-        Reflection.query
-        .filter_by(user_id=current_user.id)
-        .order_by(Reflection.created_at.desc())
-        .first()
-    )
 
     return render_template(
         "main/home.html",
         goal_contexts=goal_contexts,
-        latest_reflection=latest_reflection,
         skill_type_labels=SKILL_TYPE_LABELS,
     )
