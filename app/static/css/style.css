@@ -181,8 +181,11 @@ a:hover { text-decoration: underline; }
   flex: 1;
 }
 
-.goal-record-panel { display: none; }
-.goal-record-panel.active { display: block; }
+.goal-main-panel { display: none; }
+.goal-main-panel.active { display: block; }
+
+.ms-panel { display: none; }
+.ms-panel.active { display: block; }
 
 /* AI loading overlay */
 @keyframes ai-spin { to { transform: rotate(360deg); } }

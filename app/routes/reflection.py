@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..extensions import db
 from ..forms import ReflectionForm, SKILL_TYPE_LABELS
-from ..models import PracticeTheme, DailyPracticeTheme, Reflection, Goal
+from ..models import PracticeTheme, DailyPracticeTheme, Reflection, Goal, GoalMilestone
 
 reflection_bp = Blueprint("reflection", __name__)
 
@@ -71,15 +71,43 @@ def logs():
     for st in skill_order:
         goals_data = []
         for goal in skill_goals[st]:
-            daily_themes = (
+            milestones = (
+                GoalMilestone.query
+                .filter_by(goal_id=goal.id)
+                .order_by(GoalMilestone.month_index)
+                .all()
+            )
+            milestones_data = []
+            assigned_ids = set()
+            for ms in milestones:
+                themes = (
+                    DailyPracticeTheme.query
+                    .filter_by(goal_id=goal.id, milestone_id=ms.id)
+                    .order_by(DailyPracticeTheme.created_at.desc())
+                    .all()
+                )
+                for t in themes:
+                    assigned_ids.add(t.id)
+                milestones_data.append({
+                    "milestone": ms,
+                    "daily_themes": themes,
+                })
+            # milestone_id が未設定のテーマ（旧データ対応）
+            unassigned = (
                 DailyPracticeTheme.query
                 .filter_by(goal_id=goal.id)
+                .filter(DailyPracticeTheme.milestone_id.is_(None))
                 .order_by(DailyPracticeTheme.created_at.desc())
                 .all()
             )
+            if unassigned:
+                milestones_data.append({
+                    "milestone": None,
+                    "daily_themes": unassigned,
+                })
             goals_data.append({
                 "goal": goal,
-                "daily_themes": daily_themes,
+                "milestones_data": milestones_data,
             })
         skill_tabs.append({
             "skill_type": st,
