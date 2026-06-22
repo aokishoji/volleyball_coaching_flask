@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..extensions import db
-from ..forms import ReflectionForm
+from ..forms import ReflectionForm, SKILL_TYPE_LABELS
 from ..models import PracticeTheme, DailyPracticeTheme, Reflection, Goal
 
 reflection_bp = Blueprint("reflection", __name__)
@@ -50,7 +50,40 @@ def new_reflection():
 @reflection_bp.route("/logs")
 @login_required
 def logs():
-    reflections = Reflection.query.filter_by(user_id=current_user.id).order_by(Reflection.created_at.desc()).all()
-    goals = Goal.query.filter_by(user_id=current_user.id).order_by(Goal.created_at.desc()).all()
-    daily_themes = DailyPracticeTheme.query.filter_by(user_id=current_user.id).order_by(DailyPracticeTheme.created_at.desc()).all()
-    return render_template("reflection/logs.html", reflections=reflections, goals=goals, daily_themes=daily_themes)
+    goals = (
+        Goal.query
+        .filter_by(user_id=current_user.id)
+        .order_by(Goal.created_at.desc())
+        .all()
+    )
+
+    # スキル別にグループ化（active→archived の順で最初に出てきた skill_type を優先）
+    skill_order = []
+    skill_goals = {}
+    for goal in goals:
+        st = goal.skill_type or "other"
+        if st not in skill_goals:
+            skill_order.append(st)
+            skill_goals[st] = []
+        skill_goals[st].append(goal)
+
+    skill_tabs = []
+    for st in skill_order:
+        goal_ids = [g.id for g in skill_goals[st]]
+        daily_themes = (
+            DailyPracticeTheme.query
+            .filter(DailyPracticeTheme.goal_id.in_(goal_ids))
+            .order_by(DailyPracticeTheme.created_at.desc())
+            .all()
+        )
+        skill_tabs.append({
+            "skill_type": st,
+            "goals": skill_goals[st],
+            "daily_themes": daily_themes,
+        })
+
+    return render_template(
+        "reflection/logs.html",
+        skill_tabs=skill_tabs,
+        skill_type_labels=SKILL_TYPE_LABELS,
+    )
