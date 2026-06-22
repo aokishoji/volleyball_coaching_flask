@@ -112,19 +112,6 @@ class GoalRoadmapForm(FlaskForm):
         ],
         validators=[DataRequired()]
     )
-    focus_hint = SelectMultipleField(
-        "特に強化したい要素",
-        choices=[
-            ("spike", "スパイク"),
-            ("serve", "サーブ"),
-            ("reception", "レセプション"),
-            ("defense", "ディグ・守備"),
-            ("setting", "トス・つなぎ"),
-            ("physical", "フィジカル"),
-            ("mental", "メンタル"),
-        ],
-        validators=[Optional()]
-    )
     submit = SubmitField("AIコーチと目標設定を始める")
 
 class GoalCoachMessageForm(FlaskForm):

@@ -85,7 +85,6 @@ def build_system_prompt(profile=None) -> str:
     return _BASE_SYSTEM_PROMPT + "\n".join(lines)
 
 def build_initial_user_message(form_data: dict) -> str:
-    focus = ", ".join(form_data.get("focus_hint") or []) or "未選択"
     target_date = form_data.get("target_date")
     target_date_text = target_date.strftime("%Y-%m-%d") if target_date else "未設定"
     skill_type = form_data.get("skill_type") or ""
@@ -97,7 +96,6 @@ def build_initial_user_message(form_data: dict) -> str:
         f"今の状態・課題感: {form_data.get('current_level') or '未入力'}",
         f"目安日: {target_date_text}",
         f"週に練習できる日数: 週{form_data.get('weekly_practice_days') or '3'}日",
-        f"特に強化したい要素: {focus}",
     ])
 
 def _extract_json(text: str) -> dict:

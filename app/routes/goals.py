@@ -131,7 +131,6 @@ def roadmap():
                 "current_level": form.current_level.data,
                 "target_date": form.target_date.data,
                 "weekly_practice_days": form.weekly_practice_days.data,
-                "focus_hint": form.focus_hint.data,
                 "skill_type": selected_skill,
             })
             history = [{"role": "user", "content": initial_message}]
