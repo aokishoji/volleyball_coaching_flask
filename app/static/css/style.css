@@ -150,6 +150,40 @@ a:hover { text-decoration: underline; }
 .goal-tab-panel { display: none; }
 .goal-tab-panel.active { display: block; }
 
+/* ── 目標ページャー ── */
+.goal-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0 12px;
+}
+.pager-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.pager-btn:disabled {
+  color: var(--subtext);
+  opacity: 0.4;
+  cursor: default;
+}
+.pager-counter {
+  font-size: 0.82rem;
+  color: var(--subtext);
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+}
+
+.goal-record-panel { display: none; }
+.goal-record-panel.active { display: block; }
+
 /* AI loading overlay */
 @keyframes ai-spin { to { transform: rotate(360deg); } }
 .ai-loading-overlay {

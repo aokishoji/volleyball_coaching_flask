@@ -19,73 +19,96 @@
   {% endif %}
 
   {% for tab in skill_tabs %}
+  {% set tab_idx = loop.index0 %}
   <div{% if skill_tabs | length > 1 %} class="goal-tab-panel{% if loop.first %} active{% endif %}"{% endif %}>
 
-    <!-- 目標履歴 -->
-    <section class="card">
-      <h2>目標履歴</h2>
-      {% for goal in tab.goals %}
-      <div class="list-item" style="border-left:3px solid {% if goal.status == 'active' %}#2563eb{% else %}#d1d5db{% endif %}; padding-left:0.75rem;">
-        {% if goal.status == "active" %}
-          <span style="font-size:0.7rem; font-weight:700; color:#2563eb; letter-spacing:0.05em;">🎯 現在の目標</span>
+    {% if tab.goals_data | length > 1 %}
+    <div class="goal-pager">
+      <button class="pager-btn" id="pager-prev-{{ tab_idx }}"
+              onclick="switchGoal({{ tab_idx }}, -1)" disabled>← 前の目標</button>
+      <span class="pager-counter" id="pager-counter-{{ tab_idx }}">
+        1 / {{ tab.goals_data | length }}
+      </span>
+      <button class="pager-btn" id="pager-next-{{ tab_idx }}"
+              onclick="switchGoal({{ tab_idx }}, 1)">次の目標 →</button>
+    </div>
+    {% endif %}
+
+    <div id="goal-panels-{{ tab_idx }}" data-current="0">
+      {% for gdata in tab.goals_data %}
+      {% set goal_idx = loop.index0 %}
+      <div class="goal-record-panel{% if loop.first %} active{% endif %}"
+           id="goal-panel-{{ tab_idx }}-{{ goal_idx }}">
+
+        <!-- 目標ヘッダー -->
+        <div class="card" style="border-left:4px solid {% if gdata.goal.status == 'active' %}#2563eb{% else %}#d1d5db{% endif %}; margin-bottom:0;">
+          {% if gdata.goal.status == "active" %}
+            <span style="font-size:0.7rem; font-weight:700; color:#2563eb; letter-spacing:0.05em;">🎯 現在の目標</span>
+          {% else %}
+            <span style="font-size:0.7rem; font-weight:700; color:#6b7280; letter-spacing:0.05em;">📁 過去の目標</span>
+          {% endif %}
+          <p style="font-size:1rem; font-weight:700; margin:4px 0;">{{ gdata.goal.goal_title }}</p>
+          {% if gdata.goal.target_date %}
+            <p style="font-size:0.8rem; color:var(--subtext); margin:0 0 8px;">目標期限: {{ gdata.goal.target_date.strftime('%Y年%m月%d日') }}</p>
+          {% endif %}
+          {% if gdata.goal.goal_detail %}
+          <details style="margin-top:4px;">
+            <summary style="font-size:0.8rem; color:var(--primary); cursor:pointer;">目標の詳細を見る</summary>
+            <p class="preline" style="font-size:0.85rem; color:var(--subtext); margin-top:6px;">{{ gdata.goal.goal_detail }}</p>
+          </details>
+          {% endif %}
+        </div>
+
+        <!-- 練習テーマ + 振り返り -->
+        {% set themes_with_records = gdata.daily_themes | selectattr('reflections') | list %}
+        {% if themes_with_records %}
+          {% for theme in gdata.daily_themes %}
+          {% if theme.reflections %}
+          <div style="margin-top:12px;">
+            <div class="sub-card" style="border-left:3px solid #b45309;">
+              <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin:0 0 2px;">🏋️ 練習テーマ</p>
+              <p style="font-size:0.8rem; color:var(--subtext); margin:0 0 4px;">{{ theme.created_at | jst('%Y-%m-%d') }}</p>
+              <p style="font-weight:700; margin:0 0 4px;">{{ theme.theme_title }}</p>
+              <details>
+                <summary style="font-size:0.8rem; color:var(--primary); cursor:pointer;">テーマ詳細</summary>
+                <p class="preline" style="font-size:0.85rem; margin-top:4px;">{{ theme.theme_detail }}</p>
+                {% if theme.check_point %}
+                  <p style="font-size:0.85rem;"><strong>振り返りポイント:</strong> {{ theme.check_point }}</p>
+                {% endif %}
+              </details>
+            </div>
+
+            {% for r in theme.reflections | reverse %}
+            <div style="border-left:2px solid #93c5fd; padding-left:12px; margin-top:8px; background:var(--card); border-radius:0 8px 8px 0; padding:10px 12px 10px 14px;">
+              <p style="font-size:0.75rem; color:var(--subtext); margin:0 0 6px;">
+                振り返り — {{ r.created_at | jst }}
+                <span style="margin-left:6px; font-weight:600; color:{% if r.theme_applied == 'yes' %}#16a34a{% elif r.theme_applied == 'partial' %}#d97706{% else %}#dc2626{% endif %};">
+                  {% if r.theme_applied == 'yes' %}✓ 意識できた
+                  {% elif r.theme_applied == 'partial' %}△ 一部できた
+                  {% else %}✗ できなかった{% endif %}
+                </span>
+              </p>
+              <p style="font-size:0.85rem; margin:0 0 4px;"><strong>できたこと：</strong>{{ r.good_points }}</p>
+              <p style="font-size:0.85rem; margin:0 0 4px;"><strong>できなかったこと：</strong>{{ r.bad_points }}</p>
+              {% if r.cause_hypothesis %}
+                <p style="font-size:0.85rem; margin:0 0 4px;"><strong>原因の仮説：</strong>{{ r.cause_hypothesis }}</p>
+              {% endif %}
+              <p style="font-size:0.85rem; margin:0 0 4px;"><strong>次回意識：</strong>{{ r.next_action }}</p>
+              {% if r.coach_question %}
+                <p style="font-size:0.85rem; margin:0;"><strong>コーチへの質問：</strong>{{ r.coach_question }}</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endfor %}
         {% else %}
-          <span style="font-size:0.7rem; font-weight:700; color:#6b7280; letter-spacing:0.05em;">過去の目標</span>
+          <p style="font-size:0.85rem; color:var(--subtext); margin-top:12px;">まだ練習記録がありません。</p>
         {% endif %}
-        <p style="font-size:0.95rem; font-weight:700; margin:2px 0 4px;">{{ goal.goal_title }}</p>
-        {% if goal.target_date %}
-          <p style="font-size:0.8rem; color:#888; margin:0 0 0.25rem;">目標期限: {{ goal.target_date.strftime('%Y年%m月%d日') }}</p>
-        {% endif %}
-        <p class="preline" style="font-size:0.85rem; color:var(--subtext);">{{ goal.goal_detail }}</p>
+
       </div>
       {% endfor %}
-    </section>
-
-    <!-- 練習記録 -->
-    <section class="card">
-      <h2>練習記録</h2>
-      {% set has_records = tab.daily_themes | selectattr('reflections') | list %}
-      {% if has_records %}
-        {% for theme in tab.daily_themes %}
-        {% if theme.reflections %}
-        <div class="list-item">
-          <p style="font-size:0.8rem; color:#888;">{{ theme.created_at | jst('%Y-%m-%d') }}</p>
-
-          <div class="sub-card" style="margin-bottom:0.5rem; border-left:3px solid #b45309;">
-            <p style="font-size:0.7rem; font-weight:700; color:#b45309; letter-spacing:0.05em; margin:0 0 2px;">🏋️ 練習テーマ</p>
-            <p><strong>{{ theme.theme_title }}</strong></p>
-            <p class="preline" style="font-size:0.9rem;">{{ theme.theme_detail }}</p>
-            {% if theme.check_point %}
-              <p style="font-size:0.85rem;"><strong>振り返りポイント:</strong> {{ theme.check_point }}</p>
-            {% endif %}
-          </div>
-
-          {% for r in theme.reflections | reverse %}
-          <div style="border-left:3px solid #4a90d9; padding-left:0.75rem; margin-top:0.5rem;">
-            <p style="font-size:0.75rem; color:#888; margin:0 0 0.25rem;">振り返り — {{ r.created_at | jst }}</p>
-            <p style="font-size:0.85rem;">
-              <strong>テーマを意識できたか:</strong>
-              {% if r.theme_applied == 'yes' %}はい
-              {% elif r.theme_applied == 'partial' %}一部
-              {% else %}いいえ{% endif %}
-            </p>
-            <p style="font-size:0.85rem;"><strong>できたこと:</strong> {{ r.good_points }}</p>
-            <p style="font-size:0.85rem;"><strong>できなかったこと:</strong> {{ r.bad_points }}</p>
-            {% if r.cause_hypothesis %}
-              <p style="font-size:0.85rem;"><strong>原因の仮説:</strong> {{ r.cause_hypothesis }}</p>
-            {% endif %}
-            <p style="font-size:0.85rem;"><strong>次回意識すること:</strong> {{ r.next_action }}</p>
-            {% if r.coach_question %}
-              <p style="font-size:0.85rem;"><strong>コーチへの質問:</strong> {{ r.coach_question }}</p>
-            {% endif %}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-        {% endfor %}
-      {% else %}
-        <p>まだ記録がありません。</p>
-      {% endif %}
-    </section>
+    </div>
 
   </div>
   {% endfor %}
@@ -98,7 +121,6 @@
 
 </div>
 
-{% if skill_tabs | length > 1 %}
 <script>
 function switchLogsTab(idx) {
   document.querySelectorAll('.goal-tab-panel').forEach(function(p, i) {
@@ -108,7 +130,27 @@ function switchLogsTab(idx) {
     b.classList.toggle('active', i === idx);
   });
 }
+
+function switchGoal(tabIdx, direction) {
+  var container = document.getElementById('goal-panels-' + tabIdx);
+  if (!container) return;
+  var panels = container.querySelectorAll('.goal-record-panel');
+  var current = parseInt(container.dataset.current || '0');
+  var next = current + direction;
+  if (next < 0 || next >= panels.length) return;
+
+  panels[current].classList.remove('active');
+  panels[next].classList.add('active');
+  container.dataset.current = next;
+
+  var counter = document.getElementById('pager-counter-' + tabIdx);
+  if (counter) counter.textContent = (next + 1) + ' / ' + panels.length;
+
+  var prevBtn = document.getElementById('pager-prev-' + tabIdx);
+  var nextBtn = document.getElementById('pager-next-' + tabIdx);
+  if (prevBtn) prevBtn.disabled = (next === 0);
+  if (nextBtn) nextBtn.disabled = (next === panels.length - 1);
+}
 </script>
-{% endif %}
 
 {% endblock %}

@@ -69,17 +69,21 @@ def logs():
 
     skill_tabs = []
     for st in skill_order:
-        goal_ids = [g.id for g in skill_goals[st]]
-        daily_themes = (
-            DailyPracticeTheme.query
-            .filter(DailyPracticeTheme.goal_id.in_(goal_ids))
-            .order_by(DailyPracticeTheme.created_at.desc())
-            .all()
-        )
+        goals_data = []
+        for goal in skill_goals[st]:
+            daily_themes = (
+                DailyPracticeTheme.query
+                .filter_by(goal_id=goal.id)
+                .order_by(DailyPracticeTheme.created_at.desc())
+                .all()
+            )
+            goals_data.append({
+                "goal": goal,
+                "daily_themes": daily_themes,
+            })
         skill_tabs.append({
             "skill_type": st,
-            "goals": skill_goals[st],
-            "daily_themes": daily_themes,
+            "goals_data": goals_data,
         })
 
     return render_template(
