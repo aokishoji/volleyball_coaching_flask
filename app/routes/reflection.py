@@ -70,7 +70,7 @@ def logs():
     skill_tabs = []
     for st in skill_order:
         goals_data = []
-        for goal in skill_goals[st]:
+        for goal in reversed(skill_goals[st]):  # 古い順（左が過去、右が直近）
             milestones = (
                 GoalMilestone.query
                 .filter_by(goal_id=goal.id)

@@ -24,23 +24,24 @@
   <div{% if skill_tabs | length > 1 %} class="goal-tab-panel{% if loop.first %} active{% endif %}"{% endif %}>
 
     {# ── 目標ページャー ── #}
-    {% if tab.goals_data | length > 1 %}
+    {% set total_goals = tab.goals_data | length %}
+    {% if total_goals > 1 %}
     <div class="goal-pager">
       <button class="pager-btn" id="pager-prev-{{ tab_idx }}"
-              onclick="switchGoal({{ tab_idx }}, -1)" disabled>← 前の目標</button>
+              onclick="switchGoal({{ tab_idx }}, -1)">← 過去の目標</button>
       <span class="pager-counter" id="pager-counter-{{ tab_idx }}">
-        1 / {{ tab.goals_data | length }}
+        {{ total_goals }} / {{ total_goals }}
       </span>
       <button class="pager-btn" id="pager-next-{{ tab_idx }}"
-              onclick="switchGoal({{ tab_idx }}, 1)">次の目標 →</button>
+              onclick="switchGoal({{ tab_idx }}, 1)" disabled>直近の目標 →</button>
     </div>
     {% endif %}
 
-    <div id="goal-panels-{{ tab_idx }}" data-current="0">
+    <div id="goal-panels-{{ tab_idx }}" data-current="{{ total_goals - 1 }}">
       {% for gdata in tab.goals_data %}
       {% set goal_idx = loop.index0 %}
 
-      <div class="goal-main-panel{% if loop.first %} active{% endif %}"
+      <div class="goal-main-panel{% if loop.last %} active{% endif %}"
            id="goal-panel-{{ tab_idx }}-{{ goal_idx }}">
 
         {# ── 目標ヘッダー ── #}
