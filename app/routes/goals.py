@@ -50,10 +50,14 @@ def new_goal():
 def roadmap():
     form = GoalRoadmapForm()
     message_form = GoalCoachMessageForm()
-    history, display_messages, result, target_date_text = get_coach_session(current_user.id)
+    history, display_messages, result, target_date_text, session_skill_type = get_coach_session(current_user.id)
+    profile = current_user.profile
 
-    if request.method == "GET" and not history:
-        form.target_date.data = date.today() + timedelta(days=90)
+    if request.method == "GET":
+        if not history:
+            form.target_date.data = date.today() + timedelta(days=90)
+        if not profile or not profile.position:
+            flash("より精度の高いアドバイスのために、プロフィールを登録してください。", "info")
 
     if request.method == "POST":
         action = request.form.get("action", "start")
@@ -67,12 +71,17 @@ def roadmap():
             title = result.get("goal_title") or "3か月目標"
             detail = build_saved_goal_detail(result)
             target_date = date.fromisoformat(target_date_text) if target_date_text else None
+            selected_skill = session_skill_type or "spike"
 
-            Goal.query.filter_by(user_id=current_user.id, status="active").update({"status": "archived"})
+            Goal.query.filter_by(
+                user_id=current_user.id,
+                skill_type=selected_skill,
+                status="active",
+            ).update({"status": "archived"})
 
             goal = Goal(
                 user_id=current_user.id,
-                skill_type="three_month_ai",
+                skill_type=selected_skill,
                 goal_title=title,
                 goal_detail=detail,
                 target_date=target_date,
@@ -103,7 +112,7 @@ def roadmap():
             player_message = message_form.message.data.strip()
             history.append({"role": "user", "content": player_message})
             display_messages.append({"role": "user", "content": player_message})
-            result = ask_goal_coach(history)
+            result = ask_goal_coach(history, profile=profile)
             history.append({
                 "role": "assistant",
                 "content": json.dumps(result, ensure_ascii=False),
@@ -112,20 +121,22 @@ def roadmap():
                 "role": "assistant",
                 "content": result.get("message", ""),
             })
-            upsert_coach_session(current_user.id, history, display_messages, result, target_date_text)
+            upsert_coach_session(current_user.id, history, display_messages, result, target_date_text, session_skill_type)
             return redirect(url_for("goals.roadmap"))
 
         if action == "start" and form.validate_on_submit():
+            selected_skill = form.skill_type.data
             initial_message = build_initial_user_message({
                 "rough_goal": form.rough_goal.data,
                 "current_level": form.current_level.data,
                 "target_date": form.target_date.data,
                 "weekly_practice_days": form.weekly_practice_days.data,
                 "focus_hint": form.focus_hint.data,
+                "skill_type": selected_skill,
             })
             history = [{"role": "user", "content": initial_message}]
             display_messages = [{"role": "user", "content": form.rough_goal.data}]
-            result = ask_goal_coach(history)
+            result = ask_goal_coach(history, profile=profile)
             history.append({
                 "role": "assistant",
                 "content": json.dumps(result, ensure_ascii=False),
@@ -135,7 +146,7 @@ def roadmap():
                 "content": result.get("message", ""),
             })
             new_target_date_text = form.target_date.data.isoformat() if form.target_date.data else None
-            upsert_coach_session(current_user.id, history, display_messages, result, new_target_date_text)
+            upsert_coach_session(current_user.id, history, display_messages, result, new_target_date_text, selected_skill)
             return redirect(url_for("goals.roadmap"))
 
     return render_template(
@@ -144,6 +155,7 @@ def roadmap():
         message_form=message_form,
         display_messages=display_messages,
         result=result,
+        session_skill_type=session_skill_type,
     )
 
 @goals_bp.route("/<int:goal_id>/edit", methods=["GET", "POST"])

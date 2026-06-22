@@ -5,21 +5,27 @@
 
 <div class="stack">
 
-{% if latest_goal %}
+{% for ctx in goal_contexts %}
+{% set g = ctx.goal %}
+{% set current_month = ctx.current_month %}
+{% set current_milestone = ctx.current_milestone %}
+{% set current_practice_focus = ctx.current_practice_focus %}
+{% set latest_daily_theme = ctx.latest_daily_theme %}
+{% set days_on_theme = ctx.days_on_theme %}
 
   <!-- ▼ goal-hierarchy ブロック -->
   <div class="goal-hierarchy">
 
-    <!-- 層1: 3か月目標 -->
+    <!-- 層1: 目標 -->
     <div class="goal-layer layer-1">
-      <p class="layer-label">🎯 3か月目標</p>
-      <p class="layer-title">{{ latest_goal.goal_title }}</p>
-      {% if latest_goal.target_date %}
-        <p class="layer-sub">目標期限: {{ latest_goal.target_date.strftime('%Y年%m月%d日') }}</p>
+      <p class="layer-label">🎯 {{ skill_type_labels.get(g.skill_type, g.skill_type) }}</p>
+      <p class="layer-title">{{ g.goal_title }}</p>
+      {% if g.target_date %}
+        <p class="layer-sub">目標期限: {{ g.target_date.strftime('%Y年%m月%d日') }}</p>
       {% endif %}
       <div class="button-list" style="margin-top:10px;">
         <a class="button secondary" href="{{ url_for('goals.roadmap') }}">AI目標作成</a>
-        <a class="button secondary" href="{{ url_for('goals.edit_goal', goal_id=latest_goal.id) }}">目標確認・編集</a>
+        <a class="button secondary" href="{{ url_for('goals.edit_goal', goal_id=g.id) }}">目標確認・編集</a>
       </div>
     </div>
 
@@ -42,12 +48,12 @@
       {% endif %}
       <div class="button-list" style="margin-top:10px;">
         {% if current_month < 3 %}
-        <form method="post" action="{{ url_for('goals.advance_milestone', goal_id=latest_goal.id) }}">
+        <form method="post" action="{{ url_for('goals.advance_milestone', goal_id=g.id) }}">
           <button class="button secondary" type="submit">次のマイルストーンに進む</button>
         </form>
         {% endif %}
-        {% if latest_goal.current_month_override is not none %}
-        <form method="post" action="{{ url_for('goals.reset_milestone', goal_id=latest_goal.id) }}">
+        {% if g.current_month_override is not none %}
+        <form method="post" action="{{ url_for('goals.reset_milestone', goal_id=g.id) }}">
           <button class="button secondary" type="submit">前のマイルストーンに戻す</button>
         </form>
         {% endif %}
@@ -73,14 +79,14 @@
         <a class="button" href="{{ url_for('reflection.new_reflection') }}" style="display:block; text-align:center; margin-top:10px;">振り返りを書く</a>
         <div class="button-list" style="margin-top:8px;">
           <a class="button secondary" href="{{ url_for('goals.edit_theme', theme_id=latest_daily_theme.id) }}">テーマの修正</a>
-          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" data-ai>
+          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=g.id) }}" data-ai>
             <button class="button secondary" type="submit">次のテーマ作成</button>
           </form>
         </div>
       {% else %}
         <p class="layer-sub">まだテーマがありません</p>
         <div class="button-list" style="margin-top:10px;">
-          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=latest_goal.id) }}" data-ai>
+          <form method="post" action="{{ url_for('goals.create_today_theme', goal_id=g.id) }}" data-ai>
             <button class="button" type="submit">練習テーマを作る</button>
           </form>
         </div>
@@ -100,7 +106,7 @@
     </div>
   </section>
 
-{% endif %}
+{% endfor %}
 
   {% if latest_reflection %}
   <section class="card">

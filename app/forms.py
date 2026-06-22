@@ -40,6 +40,19 @@ MONTH_CHOICES = [("", "月")] + [(str(m), f"{m}月") for m in range(1, 13)]
 DAY_CHOICES = [("", "日")] + [(str(d), f"{d}日") for d in range(1, 32)]
 BIRTH_YEAR_CHOICES = [("", "年")] + [(str(y), str(y)) for y in range(_current_year, 1939, -1)]
 
+SKILL_TYPE_CHOICES = [
+    ("spike", "スパイク"),
+    ("receive", "レシーブ"),
+    ("serve", "サーブ"),
+    ("block", "ブロック"),
+    ("set", "トス・セット"),
+    ("physical", "フィジカル"),
+    ("mental", "メンタル"),
+]
+
+SKILL_TYPE_LABELS = {k: v for k, v in SKILL_TYPE_CHOICES}
+SKILL_TYPE_LABELS["three_month_ai"] = "3か月目標"
+
 class LoginForm(FlaskForm):
     email = StringField("メールアドレス", validators=[DataRequired(), Email()])
     password = PasswordField("パスワード", validators=[DataRequired()])
@@ -75,6 +88,11 @@ class GoalForm(FlaskForm):
     submit = SubmitField("目標を保存する")
 
 class GoalRoadmapForm(FlaskForm):
+    skill_type = SelectField(
+        "強化したいスキル",
+        choices=SKILL_TYPE_CHOICES,
+        validators=[DataRequired()],
+    )
     rough_goal = TextAreaField(
         "3か月先のざっくりした目標",
         validators=[DataRequired(), Length(max=1000)]

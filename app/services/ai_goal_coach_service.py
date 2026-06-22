@@ -4,7 +4,18 @@ from openai import OpenAI
 from ..extensions import db
 from ..models import GoalCoachSession
 
-SYSTEM_PROMPT = """
+SKILL_TYPE_LABELS = {
+    "spike": "スパイク",
+    "receive": "レシーブ",
+    "serve": "サーブ",
+    "block": "ブロック",
+    "set": "トス・セット",
+    "physical": "フィジカル",
+    "mental": "メンタル",
+    "three_month_ai": "3か月目標",
+}
+
+_BASE_SYSTEM_PROMPT = """
 あなたは中高生から競技者までを支援するバレーボール専門のAIコーチです。
 選手が入力した3か月先の抽象的な目標を、対話で具体的な目標にします。
 
@@ -47,12 +58,41 @@ SYSTEM_PROMPT = """
 }
 """
 
+def build_system_prompt(profile=None) -> str:
+    if profile is None:
+        return _BASE_SYSTEM_PROMPT
+
+    lines = [
+        "\n\n## 対象選手のプロフィール",
+        "以下の情報を踏まえて、この選手のレベルと状況に合わせた言葉・内容で回答してください。\n",
+    ]
+    if profile.age:
+        lines.append(f"- 年齢：{profile.age}歳")
+    if profile.age_group:
+        lines.append(f"- 年齢グループ：{profile.age_group}")
+    lines.append(f"- 性別：{profile.gender or '未設定'}")
+    lines.append(f"- ポジション：{profile.position or '未設定'}")
+    if profile.volleyball_experience:
+        lines.append(f"- バレー経験：{profile.volleyball_experience}")
+    lines += [
+        "",
+        "【回答時の注意】",
+        "- 小中学生には平易な言葉を使い、褒めながら進める",
+        "- 高校生以上には技術的な用語を適切に使う",
+        "- ポジションに関係する具体的なアドバイスを優先する",
+        "- 経験年数が浅い場合は基本動作を重視する",
+    ]
+    return _BASE_SYSTEM_PROMPT + "\n".join(lines)
+
 def build_initial_user_message(form_data: dict) -> str:
     focus = ", ".join(form_data.get("focus_hint") or []) or "未選択"
     target_date = form_data.get("target_date")
     target_date_text = target_date.strftime("%Y-%m-%d") if target_date else "未設定"
+    skill_type = form_data.get("skill_type") or ""
+    skill_label = SKILL_TYPE_LABELS.get(skill_type, skill_type) if skill_type else "未選択"
     return "\n".join([
         "3か月先の目標設定をしたいです。",
+        f"強化したいスキル: {skill_label}",
         f"抽象目標: {form_data.get('rough_goal') or ''}",
         f"今の状態・課題感: {form_data.get('current_level') or '未入力'}",
         f"目安日: {target_date_text}",
@@ -123,7 +163,7 @@ def _fallback_reply(history: list[dict]) -> dict:
         ],
     }
 
-def ask_goal_coach(history: list[dict]) -> dict:
+def ask_goal_coach(history: list[dict], profile=None) -> dict:
     api_key = current_app.config.get("OPENAI_API_KEY")
     model = current_app.config.get("OPENAI_MODEL", "gpt-5.4-mini")
     if not api_key:
@@ -133,7 +173,7 @@ def ask_goal_coach(history: list[dict]) -> dict:
         client = OpenAI(api_key=api_key)
         response = client.responses.create(
             model=model,
-            input=[{"role": "system", "content": SYSTEM_PROMPT}] + history,
+            input=[{"role": "system", "content": build_system_prompt(profile)}] + history,
         )
         return normalize_goal_result(_extract_json(response.output_text))
     except Exception as exc:
@@ -169,15 +209,16 @@ def normalize_goal_result(result: dict) -> dict:
 def get_coach_session(user_id: int) -> tuple:
     record = GoalCoachSession.query.filter_by(user_id=user_id).first()
     if record is None:
-        return [], [], None, None
+        return [], [], None, None, None
     return (
         json.loads(record.history_json),
         json.loads(record.display_json),
         json.loads(record.result_json) if record.result_json else None,
         record.target_date_text,
+        record.skill_type,
     )
 
-def upsert_coach_session(user_id: int, history: list, display: list, result: dict, target_date_text) -> None:
+def upsert_coach_session(user_id: int, history: list, display: list, result: dict, target_date_text, skill_type=None) -> None:
     record = GoalCoachSession.query.filter_by(user_id=user_id).first()
     if record is None:
         record = GoalCoachSession(user_id=user_id)
@@ -186,6 +227,7 @@ def upsert_coach_session(user_id: int, history: list, display: list, result: dic
     record.display_json = json.dumps(display, ensure_ascii=False)
     record.result_json = json.dumps(result, ensure_ascii=False)
     record.target_date_text = target_date_text
+    record.skill_type = skill_type
     db.session.commit()
 
 def clear_coach_session(user_id: int) -> None:

@@ -12,6 +12,7 @@
             <form method="post" data-ai>
                 {{ form.hidden_tag() }}
                 <input type="hidden" name="action" value="start">
+                {{ render_field(form.skill_type) }}
                 {{ render_field(form.rough_goal) }}
                 {{ render_field(form.current_level) }}
                 {{ render_field(form.target_date) }}
@@ -20,6 +21,11 @@
                 {{ form.submit(class_='button') }}
             </form>
         {% else %}
+            {% if session_skill_type %}
+            <p style="font-size:0.75rem; color:#2563eb; font-weight:700; margin-bottom:8px;">
+                スキル: {{ session_skill_type }}
+            </p>
+            {% endif %}
             <div class="coach-chat" id="coach-chat">
                 {% for item in display_messages %}
                     <div class="chat-message chat-{{ item.role }}">

@@ -145,6 +145,7 @@ class GoalCoachSession(db.Model, TimestampMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, unique=True)
+    skill_type = db.Column(db.String(50), nullable=True)
     history_json = db.Column(db.Text, nullable=False, default="[]")
     display_json = db.Column(db.Text, nullable=False, default="[]")
     result_json = db.Column(db.Text)
