@@ -119,6 +119,37 @@ a:hover { text-decoration: underline; }
   text-align: center;
 }
 
+/* ── 目標タブナビゲーション ── */
+.goal-tab-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.goal-tab-nav::-webkit-scrollbar { display: none; }
+
+.goal-tab-btn {
+  flex-shrink: 0;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--subtext);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.goal-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.goal-tab-panel { display: none; }
+.goal-tab-panel.active { display: block; }
+
 /* AI loading overlay */
 @keyframes ai-spin { to { transform: rotate(360deg); } }
 .ai-loading-overlay {
