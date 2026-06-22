@@ -8,6 +8,24 @@
         <h1 style="margin-top:0;">AI目標作成</h1>
         <p style="font-size:0.85rem; color:var(--subtext);">3か月先の目標から始めて、AIコーチと対話しながら具体目標とマイルストーンを作ります。</p>
 
+        {% if profile and (profile.age or profile.position or profile.volleyball_experience) %}
+        <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.8rem; color:#1d4ed8;">
+            <p style="font-weight:700; margin:0 0 4px;">🧑 AIコーチが参照しているプロフィール</p>
+            <ul style="margin:0; padding-left:1.2em; color:#1e40af; line-height:1.8;">
+                {% if profile.age %}<li>年齢：{{ profile.age }}歳</li>{% endif %}
+                {% if profile.position %}<li>ポジション：{{ position_labels.get(profile.position, profile.position) }}</li>{% endif %}
+                {% if profile.volleyball_experience %}<li>バレー経験：{{ profile.volleyball_experience }}</li>{% endif %}
+                {% if profile.gender %}<li>性別：{{ profile.gender }}</li>{% endif %}
+            </ul>
+            <a href="{{ url_for('profile.edit_profile') }}" style="font-size:0.75rem; color:#2563eb; text-decoration:underline;">プロフィールを編集</a>
+        </div>
+        {% elif not profile or not profile.position %}
+        <div style="background:#fefce8; border:1px solid #fde047; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:0.8rem; color:#854d0e;">
+            ⚠️ プロフィール未登録のため、汎用的な回答になります。
+            <a href="{{ url_for('profile.edit_profile') }}" style="color:#92400e; text-decoration:underline;">プロフィールを登録する</a>
+        </div>
+        {% endif %}
+
         {% if not display_messages %}
             <form method="post" data-ai>
                 {{ form.hidden_tag() }}

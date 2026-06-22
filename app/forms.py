@@ -34,6 +34,8 @@ POSITION_CHOICES = [
     ("OP", "オポジット"),
 ]
 
+POSITION_LABELS = {k: v for k, v in POSITION_CHOICES if k}
+
 _current_year = date.today().year
 YEAR_CHOICES = [("", "年")] + [(str(y), str(y)) for y in range(_current_year, _current_year - 30, -1)]
 MONTH_CHOICES = [("", "月")] + [(str(m), f"{m}月") for m in range(1, 13)]

@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from ..extensions import db
-from ..forms import GoalForm, GoalRoadmapForm, GoalCoachMessageForm, GoalEditForm, DailyThemeEditForm
+from ..forms import GoalForm, GoalRoadmapForm, GoalCoachMessageForm, GoalEditForm, DailyThemeEditForm, POSITION_LABELS
 from ..models import Goal, GoalMilestone, GoalCoachSession, Reflection, DailyPracticeTheme
 from ..services.goal_service import build_goal_text
 from ..services.ai_goal_coach_service import (
@@ -155,6 +155,8 @@ def roadmap():
         display_messages=display_messages,
         result=result,
         session_skill_type=session_skill_type,
+        profile=profile,
+        position_labels=POSITION_LABELS,
     )
 
 @goals_bp.route("/<int:goal_id>/edit", methods=["GET", "POST"])
